@@ -72,8 +72,8 @@ export default async function StudentDetailPage({
         ← Volver a usuarios
       </Link>
 
-      {/* Header */}
-      <div className="flex items-start justify-between mb-6">
+      {/* Header — apila en móvil, lado a lado en sm+ */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
         <div>
           <div className="flex items-center gap-3 flex-wrap">
             <h1 className="text-2xl font-bold">{student.name}</h1>
@@ -90,8 +90,8 @@ export default async function StudentDetailPage({
             Registrado el {new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", day: "numeric", month: "long", year: "numeric" }).format(new Date(student.createdAt))}
           </p>
         </div>
-        <div className="flex flex-col items-end gap-2">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-2 sm:items-end">
+          <div className="flex items-center gap-3 flex-wrap">
             {student.suspended ? (
               <Badge variant="destructive">Suspendido</Badge>
             ) : (

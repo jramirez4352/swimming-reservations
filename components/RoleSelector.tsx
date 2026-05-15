@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
 import { changeUserRole } from "@/lib/actions/admin-users"
 
 interface Props {
@@ -9,15 +8,20 @@ interface Props {
   currentRole: string
 }
 
+const ROLES = [
+  { value: "STUDENT",  label: "Alumno",  labelShort: "Alumno",  active: "bg-blue-600 text-white" },
+  { value: "PROFESOR", label: "Profesor", labelShort: "Profesor", active: "bg-emerald-600 text-white" },
+  { value: "ADMIN",    label: "Admin",    labelShort: "Admin",    active: "bg-slate-800 text-white" },
+]
+
 export function RoleSelector({ userId, currentRole }: Props) {
   const [role, setRole] = useState(currentRole)
   const [loading, setLoading] = useState(false)
 
-  const ROLE_LABELS: Record<string, string> = { STUDENT: "Alumno", ADMIN: "Administrador", PROFESOR: "Profesor" }
-
   async function handleChange(newRole: string) {
     if (newRole === role) return
-    if (!confirm(`¿Cambiar rol a ${ROLE_LABELS[newRole] ?? newRole}?`)) return
+    const label = ROLES.find(r => r.value === newRole)?.label ?? newRole
+    if (!confirm(`¿Cambiar rol a ${label}?`)) return
     setLoading(true)
     await changeUserRole(userId, newRole)
     setRole(newRole)
@@ -25,14 +29,10 @@ export function RoleSelector({ userId, currentRole }: Props) {
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-sm text-muted-foreground">Rol:</span>
-      <div className="flex rounded-md overflow-hidden border">
-        {[
-          { value: "STUDENT", label: "Alumno", active: "bg-blue-600 text-white" },
-          { value: "PROFESOR", label: "Profesor", active: "bg-emerald-600 text-white" },
-          { value: "ADMIN", label: "Admin", active: "bg-slate-800 text-white" },
-        ].map((r, i) => (
+    <div className="flex items-center gap-2 flex-wrap">
+      <span className="text-sm text-muted-foreground shrink-0">Rol:</span>
+      <div className="flex rounded-md border overflow-hidden shrink-0">
+        {ROLES.map((r, i) => (
           <button
             key={r.value}
             onClick={() => handleChange(r.value)}
@@ -41,7 +41,7 @@ export function RoleSelector({ userId, currentRole }: Props) {
               role === r.value ? r.active : "bg-white text-slate-600 hover:bg-slate-50"
             }`}
           >
-            {r.label}
+            {r.labelShort}
           </button>
         ))}
       </div>
