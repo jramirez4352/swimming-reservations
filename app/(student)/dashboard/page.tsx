@@ -13,7 +13,8 @@ export default async function DashboardPage() {
   const allLevels = await db.level.findMany({ orderBy: { order: "asc" } })
   const studentLevelData = allLevels.find(l => l.id === student?.level) ?? null
 
-  const [classes, myReservations, myWaitlist] = await Promise.all([
+  const [classes, myReservations, myWaitlist, activeReservationsWithClass] = await Promise.all([
+    // Clases futuras para el calendario
     db.class.findMany({
       where: { datetime: { gte: now, lte: threeMonthsLater } },
       include: {
@@ -31,6 +32,20 @@ export default async function DashboardPage() {
       where: { userId: session.user.id },
       select: { classId: true },
     }),
+    // Reservas activas con su clase completa (sin filtro de fecha) para el panel "Mis reservas"
+    db.reservation.findMany({
+      where: { userId: session.user.id, status: "ACTIVE" },
+      include: {
+        class: {
+          include: {
+            reservations: { where: { status: "ACTIVE" }, select: { id: true } },
+            _count: { select: { waitlistEntries: true } },
+            level: true,
+          },
+        },
+      },
+      orderBy: { class: { datetime: "asc" } },
+    }),
   ])
 
   const classesWithCount = classes.map(c => ({
@@ -38,6 +53,16 @@ export default async function DashboardPage() {
     activeReservations: c.reservations.length,
     waitlistCount: c._count.waitlistEntries,
     classLevel: c.level ?? null,
+  }))
+
+  const allActiveReservations = activeReservationsWithClass.map(r => ({
+    reservationId: r.id,
+    cls: {
+      ...r.class,
+      activeReservations: r.class.reservations.length,
+      waitlistCount: r.class._count.waitlistEntries,
+      classLevel: r.class.level ?? null,
+    },
   }))
 
   return (
@@ -48,6 +73,7 @@ export default async function DashboardPage() {
       userName={session.user.name}
       studentLevel={studentLevelData}
       studentLevelId={student?.level}
+      allActiveReservations={allActiveReservations}
     />
   )
 }

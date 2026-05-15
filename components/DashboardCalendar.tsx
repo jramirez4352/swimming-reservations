@@ -27,6 +27,7 @@ interface Props {
   userName?: string | null
   studentLevel?: LevelData | null
   studentLevelId?: number | null
+  allActiveReservations?: { reservationId: string; cls: ClassItem }[]
 }
 
 function getMonthOffset(year: number, month: number) {
@@ -38,7 +39,7 @@ function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate()
 }
 
-export function DashboardCalendar({ classes, reservations, waitlist, userName, studentLevel, studentLevelId }: Props) {
+export function DashboardCalendar({ classes, reservations, waitlist, userName, studentLevel, studentLevelId, allActiveReservations = [] }: Props) {
   const today = new Date()
   const [viewDate, setViewDate] = useState(new Date(today.getFullYear(), today.getMonth(), 1))
   const [selectedDay, setSelectedDay] = useState<number>(today.getDate())
@@ -80,11 +81,8 @@ export function DashboardCalendar({ classes, reservations, waitlist, userName, s
     .slice()
     .sort((a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime())
 
-  // All active reservations sorted by date (for showAll mode)
-  const allReservedClasses = reservations
-    .map(r => ({ reservationId: r.id, cls: classes.find(c => c.id === r.classId) }))
-    .filter((r): r is { reservationId: string; cls: ClassItem } => !!r.cls)
-    .sort((a, b) => new Date(a.cls.datetime).getTime() - new Date(b.cls.datetime).getTime())
+  // allActiveReservations viene del servidor con datos completos (sin filtro de fecha)
+  // Así funciona aunque la clase ya haya pasado la hora actual
 
   const monthLabel = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", month: "long", year: "numeric" }).format(viewDate)
   const selectedLabel = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota",
@@ -225,13 +223,13 @@ export function DashboardCalendar({ classes, reservations, waitlist, userName, s
               ← Volver al calendario
             </button>
           </div>
-          {allReservedClasses.length === 0 ? (
+          {allActiveReservations.length === 0 ? (
             <div className="rounded-xl border bg-white p-6 text-center">
               <p className="text-muted-foreground text-sm">No tienes reservas activas.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {allReservedClasses.map(({ reservationId, cls }) => (
+              {allActiveReservations.map(({ reservationId, cls }) => (
                 <ClassCard
                   key={reservationId}
                   cls={cls}
