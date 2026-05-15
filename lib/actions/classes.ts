@@ -6,7 +6,16 @@ import { auth } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 
-const ClassSchema = z.object({
+const CreateClassSchema = z.object({
+  title: z.string().min(2, "Mínimo 2 caracteres"),
+  description: z.string().optional(),
+  instructorUserId: z.string().min(1, "Selecciona un instructor"),
+  datetime: z.string().min(1, "Fecha requerida"),
+  durationMins: z.coerce.number().int().min(15).max(240),
+  maxCapacity: z.coerce.number().int().min(1).max(100),
+})
+
+const UpdateClassSchema = z.object({
   title: z.string().min(2, "Mínimo 2 caracteres"),
   description: z.string().optional(),
   instructor: z.string().min(2, "Mínimo 2 caracteres"),
@@ -22,10 +31,10 @@ export async function createClass(
   const session = await auth()
   if (session?.user?.role !== "ADMIN") return { error: "Sin permiso" }
 
-  const parsed = ClassSchema.safeParse({
+  const parsed = CreateClassSchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description") || undefined,
-    instructor: formData.get("instructor"),
+    instructorUserId: formData.get("instructorUserId"),
     datetime: formData.get("datetime"),
     durationMins: formData.get("durationMins"),
     maxCapacity: formData.get("maxCapacity"),
@@ -33,9 +42,12 @@ export async function createClass(
 
   if (!parsed.success) return { error: parsed.error.issues[0].message }
 
-  const { title, description, instructor, datetime, durationMins, maxCapacity } = parsed.data
+  const { title, description, instructorUserId, datetime, durationMins, maxCapacity } = parsed.data
 
-  const instructorUserId = (formData.get("instructorUserId") as string) || null
+  const professor = await db.user.findUnique({ where: { id: instructorUserId } })
+  if (!professor) return { error: "Instructor no encontrado" }
+
+  const instructor = professor.name
 
   const isRecurring = formData.get("isRecurring") === "on"
   const frequency = formData.get("frequency") as "daily" | "weekly"
@@ -72,7 +84,7 @@ export async function updateClass(
   const session = await auth()
   if (session?.user?.role !== "ADMIN") return { error: "Sin permiso" }
 
-  const parsed = ClassSchema.safeParse({
+  const parsed = UpdateClassSchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description") || undefined,
     instructor: formData.get("instructor"),
