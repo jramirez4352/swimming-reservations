@@ -6,6 +6,7 @@ import { db } from "@/lib/db"
 import { signIn, signOut } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { AuthError } from "next-auth"
+import { sendWelcomeEmail } from "@/lib/email"
 
 const RegisterSchema = z.object({
   name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
@@ -44,6 +45,8 @@ export async function register(
 
   const hashed = await bcrypt.hash(password, 12)
   await db.user.create({ data: { name, email, phone, city, address, password: hashed } })
+
+  await sendWelcomeEmail({ name, email })
 
   redirect("/login?registered=1")
 }

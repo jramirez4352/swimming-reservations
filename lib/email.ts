@@ -34,6 +34,36 @@ function fmtDate(d: Date) {
   }).format(d)
 }
 
+export async function sendWelcomeEmail(user: User) {
+  await send(
+    user.email,
+    `¡Bienvenido/a a AquaReservas, ${user.name}! 🏊`,
+    `
+    <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:24px">
+      <h2 style="color:#2563eb;margin-bottom:4px">🏊 AquaReservas</h2>
+      <h3 style="margin-top:0">¡Tu cuenta está lista!</h3>
+      <p>Hola <strong>${user.name}</strong>, bienvenido/a a AquaReservas.</p>
+      <p>Tu cuenta ha sido creada exitosamente. Ahora puedes:</p>
+      <ul style="color:#374151;line-height:1.8">
+        <li>Explorar las clases disponibles</li>
+        <li>Reservar tu lugar en cualquier clase</li>
+        <li>Ver tu historial y progreso</li>
+        <li>Unirte a listas de espera cuando una clase está llena</li>
+      </ul>
+      <div style="text-align:center;margin:24px 0">
+        <a href="https://swimming-reservations.vercel.app/classes"
+           style="background:#2563eb;color:white;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block">
+          Ver clases disponibles →
+        </a>
+      </div>
+      <p style="color:#6b7280;font-size:14px">
+        Si tienes alguna duda, contacta a tu academia de natación.
+      </p>
+    </div>
+    `
+  )
+}
+
 export async function sendReservationConfirmation(user: User, cls: Cls) {
   await send(
     user.email,
