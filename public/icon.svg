@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background -->
+  <rect width="512" height="512" rx="96" fill="#1d4ed8"/>
+
+  <!-- Water layers -->
+  <path d="M0 370 Q128 330 256 370 Q384 410 512 370 L512 512 L0 512Z" fill="white" opacity="0.12"/>
+  <path d="M0 415 Q128 375 256 415 Q384 455 512 415 L512 512 L0 512Z" fill="white" opacity="0.1"/>
+
+  <!-- Head -->
+  <circle cx="340" cy="188" r="36" fill="white"/>
+
+  <!-- Body (crawl stroke) -->
+  <path d="M145 256 C205 230 268 246 315 232" stroke="white" stroke-width="28" stroke-linecap="round" fill="none"/>
+
+  <!-- Front arm reaching forward -->
+  <path d="M315 232 C355 212 388 190 415 168" stroke="white" stroke-width="22" stroke-linecap="round" fill="none"/>
+
+  <!-- Back arm pulling water -->
+  <path d="M195 262 C168 232 148 210 128 188" stroke="white" stroke-width="22" stroke-linecap="round" fill="none"/>
+
+  <!-- Legs flutter kick -->
+  <path d="M152 272 C140 298 126 318 115 342" stroke="white" stroke-width="18" stroke-linecap="round" fill="none"/>
+  <path d="M190 278 C180 306 172 328 166 354" stroke="white" stroke-width="18" stroke-linecap="round" fill="none"/>
+</svg>
