@@ -17,6 +17,7 @@ model User {
   phone             String?
   city              String?
   address           String?
+  level             Int?
   reservations      Reservation[]
   waitlistEntries   WaitlistEntry[]
   instructorClasses Class[]        @relation("InstructorClasses")

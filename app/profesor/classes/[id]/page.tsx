@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { AttendanceToggle } from "@/components/AttendanceToggle"
+import { LevelBadge } from "@/components/LevelBadge"
+import { LevelSelector } from "@/components/LevelSelector"
 import Link from "next/link"
 
 type Params = Promise<{ id: string }>
@@ -21,7 +23,7 @@ export default async function ProfesorClassDetailPage({ params }: { params: Para
     include: {
       reservations: {
         where: { status: "ACTIVE" },
-        include: { user: { select: { id: true, name: true, email: true, phone: true } } },
+        include: { user: { select: { id: true, name: true, email: true, phone: true, level: true } } },
         orderBy: { createdAt: "asc" },
       },
     },
@@ -103,7 +105,8 @@ export default async function ProfesorClassDetailPage({ params }: { params: Para
                   <TableHead className="w-12 text-center">✓</TableHead>
                   <TableHead>Nombre</TableHead>
                   <TableHead>Contacto</TableHead>
-                  <TableHead>Estado</TableHead>
+                  <TableHead>Nivel</TableHead>
+                  <TableHead>Asistencia</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -116,6 +119,9 @@ export default async function ProfesorClassDetailPage({ params }: { params: Para
                     <TableCell className="text-sm text-muted-foreground">
                       <div>{r.user.email}</div>
                       {r.user.phone && <div>{r.user.phone}</div>}
+                    </TableCell>
+                    <TableCell>
+                      <LevelSelector studentId={r.user.id} currentLevel={r.user.level} />
                     </TableCell>
                     <TableCell>
                       {r.attended ? (

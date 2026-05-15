@@ -2,6 +2,8 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { LevelBadge } from "@/components/LevelBadge"
+import { LevelSelector } from "@/components/LevelSelector"
 import Link from "next/link"
 
 export default async function ProfesorStudentsPage() {
@@ -13,14 +15,14 @@ export default async function ProfesorStudentsPage() {
     include: {
       reservations: {
         where: { status: "ACTIVE" },
-        include: { user: { select: { id: true, name: true, email: true, phone: true, city: true } } },
+        include: { user: { select: { id: true, name: true, email: true, phone: true, city: true, level: true } } },
       },
     },
   })
 
   // Unique students across all classes, with the classes they're enrolled in
   const studentMap = new Map<string, {
-    user: { id: string; name: string; email: string; phone: string | null; city: string | null }
+    user: { id: string; name: string; email: string; phone: string | null; city: string | null; level: number | null }
     classes: string[]
   }>()
 
@@ -51,14 +53,20 @@ export default async function ProfesorStudentsPage() {
       ) : (
         <div className="rounded-md border bg-white overflow-hidden divide-y">
           {students.map(({ user, classes }) => (
-            <div key={user.id} className="px-4 py-3 flex items-center justify-between gap-4">
-              <div className="min-w-0">
-                <p className="font-medium text-sm">{user.name}</p>
+            <div key={user.id} className="px-4 py-3 flex items-start justify-between gap-4">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="font-medium text-sm">{user.name}</p>
+                  <LevelBadge level={user.level} size="sm" />
+                </div>
                 <p className="text-xs text-muted-foreground">{user.email}{user.phone ? ` · ${user.phone}` : ""}</p>
                 <div className="flex flex-wrap gap-1 mt-1">
                   {classes.map(c => (
                     <Badge key={c} variant="secondary" className="text-[10px]">{c}</Badge>
                   ))}
+                </div>
+                <div className="mt-2">
+                  <LevelSelector studentId={user.id} currentLevel={user.level} />
                 </div>
               </div>
               <Link href={`/profesor/messages/new?toUserId=${user.id}`}>

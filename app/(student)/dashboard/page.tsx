@@ -9,6 +9,8 @@ export default async function DashboardPage() {
   const now = new Date()
   const threeMonthsLater = new Date(now.getFullYear(), now.getMonth() + 3, 1)
 
+  const student = await db.user.findUnique({ where: { id: session.user.id }, select: { level: true } })
+
   const [classes, myReservations, myWaitlist] = await Promise.all([
     db.class.findMany({
       where: { datetime: { gte: now, lte: threeMonthsLater } },
@@ -40,6 +42,7 @@ export default async function DashboardPage() {
       reservations={myReservations}
       waitlist={myWaitlist.map(w => w.classId)}
       userName={session.user.name}
+      studentLevel={student?.level}
     />
   )
 }

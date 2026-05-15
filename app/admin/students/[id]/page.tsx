@@ -8,6 +8,8 @@ import { StudentActions } from "@/components/StudentActions"
 import { RoleSelector } from "@/components/RoleSelector"
 import { AdminSetPasswordForm } from "@/components/AdminSetPasswordForm"
 import { AdminEditUserForm } from "@/components/AdminEditUserForm"
+import { LevelBadge } from "@/components/LevelBadge"
+import { LevelSelector } from "@/components/LevelSelector"
 
 type Params = Promise<{ id: string }>
 type SearchParams = Promise<{ history?: string }>
@@ -65,7 +67,10 @@ export default async function StudentDetailPage({
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">{student.name}</h1>
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="text-2xl font-bold">{student.name}</h1>
+            {student.role === "STUDENT" && <LevelBadge level={student.level} size="md" />}
+          </div>
           <p className="text-muted-foreground">{student.email}</p>
           {student.phone && <p className="text-sm text-muted-foreground">📱 {student.phone}</p>}
           {student.city && (
@@ -89,6 +94,14 @@ export default async function StudentDetailPage({
           <RoleSelector userId={student.id} currentRole={student.role} />
         </div>
       </div>
+
+      {/* Level (only for students) */}
+      {student.role === "STUDENT" && (
+        <div className="mb-6 p-4 rounded-lg border bg-white">
+          <h2 className="text-sm font-semibold mb-3 text-muted-foreground uppercase tracking-wide">Nivel de aprendizaje</h2>
+          <LevelSelector studentId={student.id} currentLevel={student.level} />
+        </div>
+      )}
 
       {/* Edit user info */}
       <div className="mb-6 p-4 rounded-lg border bg-white">

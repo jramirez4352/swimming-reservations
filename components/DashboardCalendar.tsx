@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { ClassCard } from "@/components/ClassCard"
+import { LevelBadge } from "@/components/LevelBadge"
 import Link from "next/link"
 
 const DAY_HEADERS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]
@@ -23,6 +24,7 @@ interface Props {
   reservations: { classId: string; id: string }[]
   waitlist: string[]
   userName?: string | null
+  studentLevel?: number | null
 }
 
 function getMonthOffset(year: number, month: number) {
@@ -34,7 +36,7 @@ function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate()
 }
 
-export function DashboardCalendar({ classes, reservations, waitlist, userName }: Props) {
+export function DashboardCalendar({ classes, reservations, waitlist, userName, studentLevel }: Props) {
   const today = new Date()
   const [viewDate, setViewDate] = useState(new Date(today.getFullYear(), today.getMonth(), 1))
   const [selectedDay, setSelectedDay] = useState<number>(today.getDate())
@@ -93,7 +95,10 @@ export function DashboardCalendar({ classes, reservations, waitlist, userName }:
     <div>
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Inicio</h1>
+        <div className="flex items-center gap-3 flex-wrap">
+          <h1 className="text-2xl font-bold">Inicio</h1>
+          {studentLevel && <LevelBadge level={studentLevel} size="lg" />}
+        </div>
         <p className="text-muted-foreground mt-1">
           Hola, <strong>{userName}</strong>.{" "}
           {totalActive > 0 ? (
@@ -111,7 +116,7 @@ export function DashboardCalendar({ classes, reservations, waitlist, userName }:
             "No tienes reservas activas."
           )}
         </p>
-      </div>
+        </div>
 
       {/* Calendar card */}
       <div className="bg-white rounded-2xl border shadow-sm p-4 sm:p-6 mb-6">
