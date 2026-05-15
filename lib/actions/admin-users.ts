@@ -50,6 +50,32 @@ export async function createUser(
   redirect("/admin/students")
 }
 
+const SetPasswordSchema = z.object({
+  newPassword: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+  confirmPassword: z.string(),
+}).refine((d) => d.newPassword === d.confirmPassword, {
+  message: "Las contraseñas no coinciden",
+  path: ["confirmPassword"],
+})
+
+export async function adminSetPassword(
+  userId: string,
+  _prev: { error?: string; success?: boolean } | null,
+  formData: FormData
+) {
+  await requireAdmin()
+
+  const parsed = SetPasswordSchema.safeParse({
+    newPassword: formData.get("newPassword"),
+    confirmPassword: formData.get("confirmPassword"),
+  })
+  if (!parsed.success) return { error: parsed.error.issues[0].message }
+
+  const hashed = await bcrypt.hash(parsed.data.newPassword, 12)
+  await db.user.update({ where: { id: userId }, data: { password: hashed } })
+  return { success: true }
+}
+
 export async function changeUserRole(userId: string, role: string) {
   await requireAdmin()
   await db.user.update({ where: { id: userId }, data: { role } })

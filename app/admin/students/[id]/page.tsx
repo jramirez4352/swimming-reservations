@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import Link from "next/link"
 import { StudentActions } from "@/components/StudentActions"
 import { RoleSelector } from "@/components/RoleSelector"
+import { AdminSetPasswordForm } from "@/components/AdminSetPasswordForm"
 
 type Params = Promise<{ id: string }>
 type SearchParams = Promise<{ history?: string }>
@@ -80,6 +81,12 @@ export default async function StudentDetailPage({
           </div>
           <RoleSelector userId={student.id} currentRole={student.role} />
         </div>
+      </div>
+
+      {/* Change password */}
+      <div className="mb-6 p-4 rounded-lg border bg-white">
+        <h2 className="text-sm font-semibold mb-3 text-muted-foreground uppercase tracking-wide">Cambiar contraseña</h2>
+        <AdminSetPasswordForm userId={student.id} />
       </div>
 
       {/* Stats */}
