@@ -47,8 +47,8 @@ export default async function AdminDashboardPage() {
       label: "Alumnos registrados",
       value: totalStudents,
       icon: "👥",
-      href: "/admin/reservations",
-      description: "Ver reservas",
+      href: "/admin/students?role=STUDENT",
+      description: "Ver alumnos",
     },
     {
       label: "Clases llenas",
