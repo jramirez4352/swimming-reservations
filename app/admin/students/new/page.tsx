@@ -36,6 +36,22 @@ export default function NewUserPage() {
               <Label htmlFor="email">Email</Label>
               <Input id="email" name="email" type="email" placeholder="usuario@email.com" required />
             </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label htmlFor="phone">Teléfono</Label>
+                <Input id="phone" name="phone" type="tel" placeholder="55 1234 5678" />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="city">Ciudad</Label>
+                <Input id="city" name="city" placeholder="CDMX" />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="address">
+                Dirección <span className="text-muted-foreground text-xs">(opcional)</span>
+              </Label>
+              <Input id="address" name="address" placeholder="Calle, número, colonia" />
+            </div>
             <div className="space-y-1">
               <Label htmlFor="password">Contraseña temporal</Label>
               <Input id="password" name="password" type="password" placeholder="Mínimo 6 caracteres" required />

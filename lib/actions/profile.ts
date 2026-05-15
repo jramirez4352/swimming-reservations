@@ -12,8 +12,11 @@ async function requireAuth() {
   return session.user.id
 }
 
-const UpdateNameSchema = z.object({
+const UpdateProfileSchema = z.object({
   name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
+  phone: z.string().min(8, "Ingresa un número de teléfono válido"),
+  city: z.string().min(2, "Ingresa tu ciudad"),
+  address: z.string().optional(),
 })
 
 export async function updateName(
@@ -22,10 +25,15 @@ export async function updateName(
 ) {
   const userId = await requireAuth()
 
-  const parsed = UpdateNameSchema.safeParse({ name: formData.get("name") })
+  const parsed = UpdateProfileSchema.safeParse({
+    name: formData.get("name"),
+    phone: formData.get("phone"),
+    city: formData.get("city"),
+    address: formData.get("address") || undefined,
+  })
   if (!parsed.success) return { error: parsed.error.issues[0].message }
 
-  await db.user.update({ where: { id: userId }, data: { name: parsed.data.name } })
+  await db.user.update({ where: { id: userId }, data: parsed.data })
   revalidatePath("/profile")
   return { success: true }
 }

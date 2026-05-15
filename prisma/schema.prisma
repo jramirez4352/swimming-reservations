@@ -14,6 +14,9 @@ model User {
   password        String
   role            String         @default("STUDENT")
   suspended       Boolean        @default(false)
+  phone           String?
+  city            String?
+  address         String?
   reservations    Reservation[]
   waitlistEntries WaitlistEntry[]
   createdAt       DateTime       @default(now())

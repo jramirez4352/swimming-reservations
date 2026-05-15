@@ -21,7 +21,13 @@ export default async function ProfilePage() {
           <CardTitle className="text-base">Información personal</CardTitle>
         </CardHeader>
         <CardContent>
-          <UpdateNameForm currentName={user.name} currentEmail={user.email} />
+          <UpdateNameForm
+            currentName={user.name}
+            currentEmail={user.email}
+            currentPhone={user.phone}
+            currentCity={user.city}
+            currentAddress={user.address}
+          />
         </CardContent>
       </Card>
 

@@ -66,6 +66,12 @@ export default async function StudentDetailPage({
         <div>
           <h1 className="text-2xl font-bold">{student.name}</h1>
           <p className="text-muted-foreground">{student.email}</p>
+          {student.phone && <p className="text-sm text-muted-foreground">📱 {student.phone}</p>}
+          {student.city && (
+            <p className="text-sm text-muted-foreground">
+              📍 {student.city}{student.address ? ` · ${student.address}` : ""}
+            </p>
+          )}
           <p className="text-sm text-muted-foreground mt-1">
             Registrado el {new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", year: "numeric" }).format(new Date(student.createdAt))}
           </p>

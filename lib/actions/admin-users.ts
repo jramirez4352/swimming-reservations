@@ -15,6 +15,9 @@ async function requireAdmin() {
 const CreateUserSchema = z.object({
   name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
   email: z.string().email("Email inválido"),
+  phone: z.string().optional(),
+  city: z.string().optional(),
+  address: z.string().optional(),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
   role: z.enum(["STUDENT", "ADMIN"]),
 })
@@ -28,6 +31,9 @@ export async function createUser(
   const parsed = CreateUserSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
+    phone: formData.get("phone") || undefined,
+    city: formData.get("city") || undefined,
+    address: formData.get("address") || undefined,
     password: formData.get("password"),
     role: formData.get("role"),
   })
@@ -41,6 +47,9 @@ export async function createUser(
     data: {
       name: parsed.data.name,
       email: parsed.data.email,
+      phone: parsed.data.phone,
+      city: parsed.data.city,
+      address: parsed.data.address,
       password: hashed,
       role: parsed.data.role,
     },
