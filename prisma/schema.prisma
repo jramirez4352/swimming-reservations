@@ -36,6 +36,8 @@ model Class {
   datetime         DateTime
   durationMins     Int
   maxCapacity      Int
+  levelId          Int?
+  level            Level?         @relation(fields: [levelId], references: [id])
   recurringGroupId String?
   reservations     Reservation[]
   waitlistEntries  WaitlistEntry[]
@@ -79,10 +81,11 @@ model WaitlistEntry {
 }
 
 model Level {
-  id    Int    @id @default(autoincrement())
-  name  String
-  color String
-  order Int    @default(0)
+  id      Int     @id @default(autoincrement())
+  name    String
+  color   String
+  order   Int     @default(0)
+  classes Class[]
 }
 
 model Settings {

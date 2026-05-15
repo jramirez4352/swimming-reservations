@@ -48,6 +48,8 @@ export async function createClass(
   if (!professor) return { error: "Instructor no encontrado" }
 
   const instructor = professor.name
+  const levelIdRaw = formData.get("levelId") as string
+  const levelId = levelIdRaw ? parseInt(levelIdRaw) : null
 
   const isRecurring = formData.get("isRecurring") === "on"
   const frequency = formData.get("frequency") as "daily" | "weekly"
@@ -62,12 +64,12 @@ export async function createClass(
       const d = new Date(baseDate)
       d.setDate(d.getDate() + i * stepDays)
       await db.class.create({
-        data: { title, description, instructor, instructorUserId, datetime: d, durationMins, maxCapacity, recurringGroupId: groupId },
+        data: { title, description, instructor, instructorUserId, levelId, datetime: d, durationMins, maxCapacity, recurringGroupId: groupId },
       })
     }
   } else {
     await db.class.create({
-      data: { title, description, instructor, instructorUserId, datetime: new Date(datetime), durationMins, maxCapacity },
+      data: { title, description, instructor, instructorUserId, levelId, datetime: new Date(datetime), durationMins, maxCapacity },
     })
   }
 

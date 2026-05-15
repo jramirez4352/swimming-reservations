@@ -5,6 +5,9 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { WaitlistButton } from "@/components/WaitlistButton"
 import { reserveClass, cancelReservation } from "@/lib/actions/reservation"
+import { textColor } from "@/lib/levels"
+
+type ClassLevel = { id: number; name: string; color: string }
 
 type ClassData = {
   id: string
@@ -16,15 +19,17 @@ type ClassData = {
   maxCapacity: number
   activeReservations: number
   waitlistCount?: number
+  classLevel?: ClassLevel | null
 }
 
 interface ClassCardProps {
   cls: ClassData
   reservationId?: string
   onWaitlist?: boolean
+  studentLevel?: number | null
 }
 
-export function ClassCard({ cls, reservationId, onWaitlist = false }: ClassCardProps) {
+export function ClassCard({ cls, reservationId, onWaitlist = false, studentLevel }: ClassCardProps) {
   const [loading, setLoading] = useState(false)
   const [msg, setMsg] = useState<string | null>(null)
   const [showDetail, setShowDetail] = useState(false)
@@ -35,7 +40,12 @@ export function ClassCard({ cls, reservationId, onWaitlist = false }: ClassCardP
   const isFull = available <= 0
   const isReserved = !!reservationId
 
-  const accentColor = isReserved ? "bg-green-500" : isFull ? "bg-red-400" : "bg-blue-500"
+  // Level mismatch: class has a level and student's level doesn't match
+  const levelMismatch = !isReserved && cls.classLevel !== null && cls.classLevel !== undefined
+    && studentLevel !== null && studentLevel !== undefined
+    && cls.classLevel.id !== studentLevel
+
+  const accentColor = isReserved ? "bg-green-500" : isFull ? "bg-red-400" : levelMismatch ? "bg-slate-300" : "bg-blue-500"
   const barColor = occupancyPct >= 100 ? "bg-red-500" : occupancyPct >= 75 ? "bg-amber-500" : "bg-blue-500"
   const pctColor = occupancyPct >= 100 ? "text-red-600" : occupancyPct >= 75 ? "text-amber-600" : "text-blue-600"
 
@@ -80,13 +90,25 @@ export function ClassCard({ cls, reservationId, onWaitlist = false }: ClassCardP
         <div className="px-4 pt-3 pb-2">
           <div className="flex items-start justify-between gap-2">
             <h3 className="font-semibold text-base leading-snug">{cls.title}</h3>
-            {isReserved ? (
-              <Badge className="shrink-0 bg-green-600 text-xs">Reservado</Badge>
-            ) : isFull ? (
-              <Badge variant="destructive" className="shrink-0 text-xs">Lleno</Badge>
-            ) : (
-              <Badge variant="secondary" className="shrink-0 text-xs">{available} lugares</Badge>
-            )}
+            <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
+              {cls.classLevel && (
+                <span
+                  className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                  style={{ backgroundColor: cls.classLevel.color, color: textColor(cls.classLevel.color) }}
+                >
+                  {cls.classLevel.name}
+                </span>
+              )}
+              {isReserved ? (
+                <Badge className="bg-green-600 text-xs">Reservado</Badge>
+              ) : isFull ? (
+                <Badge variant="destructive" className="text-xs">Lleno</Badge>
+              ) : levelMismatch ? (
+                <Badge variant="secondary" className="text-xs bg-slate-200">Nivel distinto</Badge>
+              ) : (
+                <Badge variant="secondary" className="text-xs">{available} lugares</Badge>
+              )}
+            </div>
           </div>
         </div>
 
@@ -145,7 +167,14 @@ export function ClassCard({ cls, reservationId, onWaitlist = false }: ClassCardP
           onClick={(e) => e.stopPropagation()}
         >
           {msg && <p className="text-xs text-red-600 mb-2">{msg}</p>}
-          {isReserved ? (
+          {levelMismatch ? (
+            <div className="w-full rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-center">
+              <p className="text-xs font-semibold text-amber-700">Nivel incompatible</p>
+              <p className="text-[11px] text-amber-600 mt-0.5">
+                Esta clase es para <strong>{cls.classLevel!.name}</strong>
+              </p>
+            </div>
+          ) : isReserved ? (
             <Button variant="outline" size="sm" className="w-full" onClick={handleCancel} disabled={loading}>
               {loading ? "Cancelando..." : "Cancelar reserva"}
             </Button>
@@ -244,7 +273,14 @@ export function ClassCard({ cls, reservationId, onWaitlist = false }: ClassCardP
               {/* Action */}
               <div>
                 {msg && <p className="text-xs text-red-600 mb-2">{msg}</p>}
-                {isReserved ? (
+                {levelMismatch ? (
+                  <div className="w-full rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-center">
+                    <p className="text-sm font-semibold text-amber-700">Nivel incompatible</p>
+                    <p className="text-xs text-amber-600 mt-1">
+                      Esta clase es para <strong>{cls.classLevel!.name}</strong>. Tu nivel actual es diferente. Contacta a tu profesor si crees que hay un error.
+                    </p>
+                  </div>
+                ) : isReserved ? (
                   <Button variant="outline" className="w-full" onClick={handleCancel} disabled={loading}>
                     {loading ? "Cancelando..." : "Cancelar reserva"}
                   </Button>

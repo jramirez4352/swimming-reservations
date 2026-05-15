@@ -9,8 +9,9 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
 interface Prof { id: string; name: string }
+interface Lvl { id: number; name: string; color: string }
 
-export function NewClassForm({ professors }: { professors: Prof[] }) {
+export function NewClassForm({ professors, levels }: { professors: Prof[]; levels: Lvl[] }) {
   const [state, action, pending] = useActionState(createClass, null)
   const [isRecurring, setIsRecurring] = useState(false)
 
@@ -60,6 +61,24 @@ export function NewClassForm({ professors }: { professors: Prof[] }) {
                 </select>
                 <p className="text-xs text-muted-foreground">El profesor podrá ver y gestionar esta clase en su panel.</p>
               </div>
+
+              {levels.length > 0 && (
+                <div className="space-y-1">
+                  <Label htmlFor="levelId">Nivel de la clase</Label>
+                  <select
+                    id="levelId"
+                    name="levelId"
+                    defaultValue=""
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <option value="">Sin nivel (abierta a todos)</option>
+                    {levels.map(l => (
+                      <option key={l.id} value={l.id}>{l.name}</option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-muted-foreground">Si seleccionas un nivel, solo alumnos de ese nivel podrán reservar.</p>
+                </div>
+              )}
 
               <div className="space-y-1">
                 <Label htmlFor="datetime">Fecha y hora de la primera clase</Label>

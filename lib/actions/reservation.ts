@@ -10,13 +10,29 @@ export async function reserveClass(classId: string) {
   const session = await auth()
   if (!session) return { error: "No autenticado" }
 
-  const cls = await db.class.findUnique({
-    where: { id: classId },
-    include: { reservations: { where: { status: "ACTIVE" } } },
-  })
+  const [cls, user] = await Promise.all([
+    db.class.findUnique({
+      where: { id: classId },
+      include: {
+        reservations: { where: { status: "ACTIVE" } },
+        level: true,
+      },
+    }),
+    db.user.findUnique({ where: { id: session.user.id }, select: { level: true, name: true, email: true } }),
+  ])
 
   if (!cls) return { error: "Clase no encontrada" }
   if (cls.reservations.length >= cls.maxCapacity) return { error: "La clase está llena" }
+
+  // Level check
+  if (cls.levelId !== null && cls.levelId !== undefined) {
+    if (!user?.level) {
+      return { error: `Esta clase es para ${cls.level?.name ?? `Nivel ${cls.levelId}`}. Aún no tienes un nivel asignado. Contacta a tu profesor.` }
+    }
+    if (user.level !== cls.levelId) {
+      return { error: `Esta clase es para ${cls.level?.name ?? `Nivel ${cls.levelId}`}. Tu nivel actual es diferente. Contacta a tu profesor si crees que hay un error.` }
+    }
+  }
 
   const existing = await db.reservation.findUnique({
     where: { userId_classId: { userId: session.user.id, classId } },
@@ -32,7 +48,6 @@ export async function reserveClass(classId: string) {
   // Remove from waitlist if they were on it
   await db.waitlistEntry.deleteMany({ where: { userId: session.user.id, classId } })
 
-  const user = await db.user.findUnique({ where: { id: session.user.id } })
   if (user) await sendReservationConfirmation(user, { ...cls, datetime: new Date(cls.datetime) })
 
   revalidatePath("/classes")

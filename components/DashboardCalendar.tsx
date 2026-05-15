@@ -26,6 +26,7 @@ interface Props {
   waitlist: string[]
   userName?: string | null
   studentLevel?: LevelData | null
+  studentLevelId?: number | null
 }
 
 function getMonthOffset(year: number, month: number) {
@@ -37,7 +38,7 @@ function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate()
 }
 
-export function DashboardCalendar({ classes, reservations, waitlist, userName, studentLevel }: Props) {
+export function DashboardCalendar({ classes, reservations, waitlist, userName, studentLevel, studentLevelId }: Props) {
   const today = new Date()
   const [viewDate, setViewDate] = useState(new Date(today.getFullYear(), today.getMonth(), 1))
   const [selectedDay, setSelectedDay] = useState<number>(today.getDate())
@@ -236,6 +237,7 @@ export function DashboardCalendar({ classes, reservations, waitlist, userName, s
                   cls={cls}
                   reservationId={reservationId}
                   onWaitlist={waitlistSet.has(cls.id)}
+                  studentLevel={studentLevelId}
                 />
               ))}
             </div>
@@ -266,6 +268,7 @@ export function DashboardCalendar({ classes, reservations, waitlist, userName, s
                   cls={cls}
                   reservationId={reservationMap.get(cls.id)}
                   onWaitlist={waitlistSet.has(cls.id)}
+                  studentLevel={studentLevelId}
                 />
               ))}
             </div>

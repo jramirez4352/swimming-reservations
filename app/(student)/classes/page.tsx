@@ -18,12 +18,17 @@ export default async function ClassesPage({ searchParams }: { searchParams: Sear
   if (q) where.title = { contains: q }
   if (instructor) where.instructor = instructor
 
+  const studentUser = session
+    ? await db.user.findUnique({ where: { id: session.user.id }, select: { level: true } })
+    : null
+
   const classes = await db.class.findMany({
     where,
     orderBy: { datetime: "asc" },
     include: {
       reservations: { where: { status: "ACTIVE" } },
       _count: { select: { waitlistEntries: true } },
+      level: true,
     },
   })
 
@@ -58,6 +63,7 @@ export default async function ClassesPage({ searchParams }: { searchParams: Sear
     ...cls,
     activeReservations: cls.reservations.length,
     waitlistCount: cls._count.waitlistEntries,
+    classLevel: cls.level ?? null,
   }))
 
   return (
@@ -83,6 +89,7 @@ export default async function ClassesPage({ searchParams }: { searchParams: Sear
               cls={cls}
               reservationId={myReservations.find((r) => r.classId === cls.id)?.id}
               onWaitlist={myWaitlist.some((w) => w.classId === cls.id)}
+              studentLevel={studentUser?.level}
             />
           ))}
         </div>

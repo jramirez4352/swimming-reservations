@@ -19,6 +19,7 @@ export default async function DashboardPage() {
       include: {
         reservations: { where: { status: "ACTIVE" }, select: { id: true } },
         _count: { select: { waitlistEntries: true } },
+        level: true,
       },
       orderBy: { datetime: "asc" },
     }),
@@ -36,6 +37,7 @@ export default async function DashboardPage() {
     ...c,
     activeReservations: c.reservations.length,
     waitlistCount: c._count.waitlistEntries,
+    classLevel: c.level ?? null,
   }))
 
   return (
@@ -45,6 +47,7 @@ export default async function DashboardPage() {
       waitlist={myWaitlist.map(w => w.classId)}
       userName={session.user.name}
       studentLevel={studentLevelData}
+      studentLevelId={student?.level}
     />
   )
 }
