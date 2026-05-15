@@ -65,6 +65,7 @@ model Reservation {
   classId    String
   status     String             @default("ACTIVE")
   attended   Boolean            @default(false)
+  absent     Boolean            @default(false)
   evaluation ClassEvaluation?
   createdAt  DateTime           @default(now())
 

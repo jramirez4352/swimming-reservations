@@ -7,11 +7,6 @@ export default async function DashboardPage() {
   if (!session) return null
 
   const now = new Date()
-  // Midnight in Bogotá (COT = UTC-5, fixed, no DST)
-  const COT_MS = 5 * 60 * 60 * 1000
-  const cotNow = new Date(now.getTime() - COT_MS)
-  cotNow.setUTCHours(0, 0, 0, 0)
-  const startOfToday = new Date(cotNow.getTime() + COT_MS)
   const threeMonthsLater = new Date(now.getFullYear(), now.getMonth() + 3, 1)
 
   const student = await db.user.findUnique({ where: { id: session.user.id }, select: { level: true } })
@@ -20,7 +15,7 @@ export default async function DashboardPage() {
 
   const [classes, myReservations, myWaitlist] = await Promise.all([
     db.class.findMany({
-      where: { datetime: { gte: startOfToday, lte: threeMonthsLater } },
+      where: { datetime: { gte: now, lte: threeMonthsLater } },
       include: {
         reservations: { where: { status: "ACTIVE" }, select: { id: true } },
         _count: { select: { waitlistEntries: true } },

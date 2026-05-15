@@ -107,7 +107,7 @@ export default async function ClassAttendancePage({ params }: { params: Params }
                 {cls.reservations.map((r) => (
                   <TableRow key={r.id} className={r.attended ? "bg-green-50/50" : ""}>
                     <TableCell className="text-center">
-                      <AttendanceToggle reservationId={r.id} initialAttended={r.attended} />
+                      <AttendanceToggle reservationId={r.id} initialAttended={r.attended} initialAbsent={r.absent} />
                     </TableCell>
                     <TableCell>
                       <Link href={`/admin/students/${r.user.id}`} className="font-medium hover:underline text-blue-600">

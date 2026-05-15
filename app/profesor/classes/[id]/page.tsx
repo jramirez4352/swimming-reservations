@@ -120,7 +120,7 @@ export default async function ProfesorClassDetailPage({ params }: { params: Para
                 {cls.reservations.map(r => (
                   <TableRow key={r.id} className={r.attended ? "bg-green-50/50" : ""}>
                     <TableCell className="text-center">
-                      <AttendanceToggle reservationId={r.id} initialAttended={r.attended} />
+                      <AttendanceToggle reservationId={r.id} initialAttended={r.attended} initialAbsent={r.absent} />
                     </TableCell>
                     <TableCell className="font-medium">{r.user.name}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">
