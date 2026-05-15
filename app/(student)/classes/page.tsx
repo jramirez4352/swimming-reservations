@@ -23,6 +23,7 @@ export default async function ClassesPage({ searchParams }: { searchParams: Sear
     orderBy: { datetime: "asc" },
     include: {
       reservations: { where: { status: "ACTIVE" } },
+      _count: { select: { waitlistEntries: true } },
     },
   })
 
@@ -56,6 +57,7 @@ export default async function ClassesPage({ searchParams }: { searchParams: Sear
   const classesWithCount = filtered.map((cls) => ({
     ...cls,
     activeReservations: cls.reservations.length,
+    waitlistCount: cls._count.waitlistEntries,
   }))
 
   return (
