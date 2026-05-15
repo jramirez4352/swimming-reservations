@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { AttendanceToggle } from "@/components/AttendanceToggle"
 import { LevelBadge } from "@/components/LevelBadge"
 import { LevelSelector } from "@/components/LevelSelector"
+import { EvaluationForm } from "@/components/EvaluationForm"
 import Link from "next/link"
 
 type Params = Promise<{ id: string }>
@@ -23,7 +24,10 @@ export default async function ProfesorClassDetailPage({ params }: { params: Para
     include: {
       reservations: {
         where: { status: "ACTIVE" },
-        include: { user: { select: { id: true, name: true, email: true, phone: true, level: true } } },
+        include: {
+          user: { select: { id: true, name: true, email: true, phone: true, level: true } },
+          evaluation: true,
+        },
         orderBy: { createdAt: "asc" },
       },
     },
@@ -109,6 +113,7 @@ export default async function ProfesorClassDetailPage({ params }: { params: Para
                   <TableHead>Contacto</TableHead>
                   <TableHead>Nivel</TableHead>
                   <TableHead>Asistencia</TableHead>
+                  {isPast && <TableHead>Evaluación</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -132,6 +137,15 @@ export default async function ProfesorClassDetailPage({ params }: { params: Para
                         <Badge variant="secondary" className="text-xs">Pendiente</Badge>
                       )}
                     </TableCell>
+                    {isPast && (
+                      <TableCell>
+                        <EvaluationForm
+                          reservationId={r.id}
+                          initialRating={r.evaluation?.rating}
+                          initialComment={r.evaluation?.comment}
+                        />
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>

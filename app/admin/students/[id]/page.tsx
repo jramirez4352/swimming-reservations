@@ -10,6 +10,7 @@ import { AdminSetPasswordForm } from "@/components/AdminSetPasswordForm"
 import { AdminEditUserForm } from "@/components/AdminEditUserForm"
 import { LevelBadge } from "@/components/LevelBadge"
 import { LevelSelector } from "@/components/LevelSelector"
+import { EvaluationDisplay } from "@/components/EvaluationDisplay"
 
 type Params = Promise<{ id: string }>
 type SearchParams = Promise<{ history?: string }>
@@ -29,7 +30,10 @@ export default async function StudentDetailPage({
       where: { id },
       include: {
         reservations: {
-          include: { class: true },
+          include: {
+            class: true,
+            evaluation: { include: { profesor: { select: { name: true } } } },
+          },
           orderBy: { class: { datetime: "desc" } },
         },
         waitlistEntries: {
@@ -246,6 +250,7 @@ export default async function StudentDetailPage({
                   <TableHead>Instructor</TableHead>
                   <TableHead>Fecha</TableHead>
                   <TableHead>Estado</TableHead>
+                  <TableHead>Evaluación</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -266,6 +271,18 @@ export default async function StudentDetailPage({
                         >
                           {r.status === "ACTIVE" ? (isPast ? "Asistida" : "Activa") : "Cancelada"}
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {r.evaluation ? (
+                          <EvaluationDisplay
+                            rating={r.evaluation.rating}
+                            comment={r.evaluation.comment}
+                            profesorName={r.evaluation.profesor.name}
+                            small
+                          />
+                        ) : (
+                          <span className="text-xs text-slate-400">—</span>
+                        )}
                       </TableCell>
                     </TableRow>
                   )
