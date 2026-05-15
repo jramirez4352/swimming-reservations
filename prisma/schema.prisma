@@ -40,6 +40,7 @@ model Reservation {
   class     Class    @relation(fields: [classId], references: [id])
   classId   String
   status    String   @default("ACTIVE")
+  attended  Boolean  @default(false)
   createdAt DateTime @default(now())
 
   @@unique([userId, classId])

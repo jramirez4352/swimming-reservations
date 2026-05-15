@@ -2,37 +2,53 @@ import { db } from "@/lib/db"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { StudentActions } from "@/components/StudentActions"
+import { StudentSearch } from "@/components/StudentSearch"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { Suspense } from "react"
 
-export default async function AdminStudentsPage() {
+type SearchParams = Promise<{ q?: string }>
+
+export default async function AdminStudentsPage({ searchParams }: { searchParams: SearchParams }) {
+  const { q } = await searchParams
+
   const students = await db.user.findMany({
-    where: { role: "STUDENT" },
+    where: {
+      role: "STUDENT",
+      ...(q ? {
+        OR: [
+          { name: { contains: q, mode: "insensitive" } },
+          { email: { contains: q, mode: "insensitive" } },
+        ],
+      } : {}),
+    },
     orderBy: { createdAt: "desc" },
     include: {
-      _count: {
-        select: {
-          reservations: true,
-        },
-      },
-      reservations: {
-        where: { status: "ACTIVE" },
-        select: { id: true },
-      },
+      _count: { select: { reservations: true } },
+      reservations: { where: { status: "ACTIVE" }, select: { id: true } },
     },
   })
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Alumnos ({students.length})</h1>
-        <Link href="/admin/students/new">
-          <Button>+ Crear usuario</Button>
-        </Link>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <h1 className="text-2xl font-bold">
+          Alumnos {q ? `— "${q}" (${students.length})` : `(${students.length})`}
+        </h1>
+        <div className="flex items-center gap-3">
+          <Suspense>
+            <StudentSearch />
+          </Suspense>
+          <Link href="/admin/students/new">
+            <Button>+ Crear</Button>
+          </Link>
+        </div>
       </div>
 
       {students.length === 0 ? (
-        <p className="text-muted-foreground">No hay alumnos registrados.</p>
+        <p className="text-muted-foreground">
+          {q ? `No se encontraron alumnos con "${q}".` : "No hay alumnos registrados."}
+        </p>
       ) : (
         <div className="rounded-md border bg-white overflow-hidden">
           <Table>
@@ -64,7 +80,7 @@ export default async function AdminStudentsPage() {
                     {s.suspended ? (
                       <Badge variant="destructive">Suspendido</Badge>
                     ) : (
-                      <Badge variant="default" className="bg-green-600">Activo</Badge>
+                      <Badge className="bg-green-600">Activo</Badge>
                     )}
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">

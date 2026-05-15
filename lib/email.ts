@@ -34,3 +34,10 @@ export async function sendWaitlistConfirmation(user: User, cls: Cls) {
     body: `Hola ${user.name}, te has unido a la lista de espera para "${cls.title}" el ${cls.datetime.toLocaleString("es-MX")}. Te notificaremos si se libera un lugar.`,
   })
 }
+
+export async function sendClassReminder(user: User, cls: Cls) {
+  console.log("[EMAIL] Recordatorio 24h →", user.email, {
+    subject: `⏰ Recuerda: ${cls.title} mañana`,
+    body: `Hola ${user.name}, te recordamos que mañana tienes "${cls.title}" con ${cls.instructor} a las ${cls.datetime.toLocaleString("es-MX", { hour: "2-digit", minute: "2-digit" })} (${cls.durationMins} min). ¡Te esperamos!`,
+  })
+}
