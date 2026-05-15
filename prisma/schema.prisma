@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id              String         @id @default(cuid())
+  name            String
+  email           String         @unique
+  password        String
+  role            String         @default("STUDENT")
+  suspended       Boolean        @default(false)
+  reservations    Reservation[]
+  waitlistEntries WaitlistEntry[]
+  createdAt       DateTime       @default(now())
+}
+
+model Class {
+  id               String         @id @default(cuid())
+  title            String
+  description      String?
+  instructor       String
+  datetime         DateTime
+  durationMins     Int
+  maxCapacity      Int
+  recurringGroupId String?
+  reservations     Reservation[]
+  waitlistEntries  WaitlistEntry[]
+  createdAt        DateTime       @default(now())
+}
+
+model Reservation {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  class     Class    @relation(fields: [classId], references: [id])
+  classId   String
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now())
+
+  @@unique([userId, classId])
+}
+
+model WaitlistEntry {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  class     Class    @relation(fields: [classId], references: [id])
+  classId   String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, classId])
+}
