@@ -4,13 +4,12 @@ import { db } from "@/lib/db"
 import { auth } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
 
-async function requireAdmin() {
-  const session = await auth()
-  if (session?.user?.role !== "ADMIN") throw new Error("Sin permiso")
-}
-
 export async function markAttendance(reservationId: string, attended: boolean) {
-  await requireAdmin()
+  const session = await auth()
+  if (!session?.user?.role || !["ADMIN", "PROFESOR"].includes(session.user.role)) {
+    throw new Error("Sin permiso")
+  }
   await db.reservation.update({ where: { id: reservationId }, data: { attended } })
   revalidatePath("/admin/classes")
+  revalidatePath("/profesor/classes")
 }
