@@ -10,6 +10,8 @@ export default async function DashboardPage() {
   const threeMonthsLater = new Date(now.getFullYear(), now.getMonth() + 3, 1)
 
   const student = await db.user.findUnique({ where: { id: session.user.id }, select: { level: true } })
+  const allLevels = await db.level.findMany({ orderBy: { order: "asc" } })
+  const studentLevelData = allLevels.find(l => l.id === student?.level) ?? null
 
   const [classes, myReservations, myWaitlist] = await Promise.all([
     db.class.findMany({
@@ -42,7 +44,7 @@ export default async function DashboardPage() {
       reservations={myReservations}
       waitlist={myWaitlist.map(w => w.classId)}
       userName={session.user.name}
-      studentLevel={student?.level}
+      studentLevel={studentLevelData}
     />
   )
 }

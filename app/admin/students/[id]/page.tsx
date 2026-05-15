@@ -24,18 +24,21 @@ export default async function StudentDetailPage({
   const { id } = await params
   const { history: historyFilter } = await searchParams
 
-  const student = await db.user.findFirst({
-    where: { id },
-    include: {
-      reservations: {
-        include: { class: true },
-        orderBy: { class: { datetime: "desc" } },
+  const [student, levels] = await Promise.all([
+    db.user.findFirst({
+      where: { id },
+      include: {
+        reservations: {
+          include: { class: true },
+          orderBy: { class: { datetime: "desc" } },
+        },
+        waitlistEntries: {
+          include: { class: { select: { title: true, datetime: true } } },
+        },
       },
-      waitlistEntries: {
-        include: { class: { select: { title: true, datetime: true } } },
-      },
-    },
-  })
+    }),
+    db.level.findMany({ orderBy: { order: "asc" } }),
+  ])
 
   if (!student) notFound()
 
@@ -43,11 +46,9 @@ export default async function StudentDetailPage({
   const active = student.reservations.filter(
     (r) => r.status === "ACTIVE" && new Date(r.class.datetime) >= now
   )
-  // History = past reservations (any status) + future cancelled reservations
   const allHistory = student.reservations.filter(
     (r) => new Date(r.class.datetime) < now || r.status === "CANCELLED"
   )
-
   const filteredHistory =
     historyFilter === "attended"
       ? allHistory.filter((r) => r.status === "ACTIVE")
@@ -58,10 +59,12 @@ export default async function StudentDetailPage({
   const attendedCount = allHistory.filter((r) => r.status === "ACTIVE").length
   const cancelledCount = allHistory.filter((r) => r.status === "CANCELLED").length
 
+  const studentLevelData = levels.find(l => l.id === student.level) ?? null
+
   return (
     <div className="max-w-3xl">
       <Link href="/admin/students" className="text-sm text-muted-foreground hover:underline block mb-6">
-        ← Volver a alumnos
+        ← Volver a usuarios
       </Link>
 
       {/* Header */}
@@ -69,7 +72,7 @@ export default async function StudentDetailPage({
         <div>
           <div className="flex items-center gap-3 flex-wrap">
             <h1 className="text-2xl font-bold">{student.name}</h1>
-            {student.role === "STUDENT" && <LevelBadge level={student.level} size="md" />}
+            {student.role === "STUDENT" && <LevelBadge level={studentLevelData} size="md" />}
           </div>
           <p className="text-muted-foreground">{student.email}</p>
           {student.phone && <p className="text-sm text-muted-foreground">📱 {student.phone}</p>}
@@ -99,7 +102,14 @@ export default async function StudentDetailPage({
       {student.role === "STUDENT" && (
         <div className="mb-6 p-4 rounded-lg border bg-white">
           <h2 className="text-sm font-semibold mb-3 text-muted-foreground uppercase tracking-wide">Nivel de aprendizaje</h2>
-          <LevelSelector studentId={student.id} currentLevel={student.level} />
+          {levels.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No hay niveles configurados.{" "}
+              <Link href="/admin/levels" className="text-blue-600 hover:underline">Crear niveles →</Link>
+            </p>
+          ) : (
+            <LevelSelector studentId={student.id} currentLevel={student.level} levels={levels} />
+          )}
         </div>
       )}
 
@@ -199,28 +209,21 @@ export default async function StudentDetailPage({
       {/* History */}
       <div>
         <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-          <h2 className="text-lg font-semibold">
-            Historial ({allHistory.length})
-          </h2>
-          {/* Filter tabs */}
+          <h2 className="text-lg font-semibold">Historial ({allHistory.length})</h2>
           <div className="flex gap-1.5">
             {[
               { label: `Todas (${allHistory.length})`, value: undefined },
               { label: `Asistidas (${attendedCount})`, value: "attended" },
               { label: `Canceladas (${cancelledCount})`, value: "cancelled" },
             ].map((tab) => {
-              const href = tab.value
-                ? `/admin/students/${id}?history=${tab.value}`
-                : `/admin/students/${id}`
+              const href = tab.value ? `/admin/students/${id}?history=${tab.value}` : `/admin/students/${id}`
               const isActive = historyFilter === tab.value
               return (
                 <Link
                   key={tab.label}
                   href={href}
                   className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
-                    isActive
-                      ? "bg-slate-800 text-white border-slate-800"
-                      : "bg-white text-slate-600 border-slate-300 hover:border-slate-500"
+                    isActive ? "bg-slate-800 text-white border-slate-800" : "bg-white text-slate-600 border-slate-300 hover:border-slate-500"
                   }`}
                 >
                   {tab.label}
@@ -253,16 +256,8 @@ export default async function StudentDetailPage({
                       <TableCell className="font-medium">{r.class.title}</TableCell>
                       <TableCell>{r.class.instructor}</TableCell>
                       <TableCell className="text-sm">
-                        {new Intl.DateTimeFormat("es-MX", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        }).format(new Date(r.class.datetime))}
-                        {!isPast && (
-                          <span className="ml-1.5 text-[10px] text-amber-600 font-medium">futura</span>
-                        )}
+                        {new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(r.class.datetime))}
+                        {!isPast && <span className="ml-1.5 text-[10px] text-amber-600 font-medium">futura</span>}
                       </TableCell>
                       <TableCell>
                         <Badge

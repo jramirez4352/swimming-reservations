@@ -1,15 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import { LEVELS } from "@/lib/levels"
+import { LevelData, textColor } from "@/lib/levels"
 import { assignLevel } from "@/lib/actions/levels"
 
 interface Props {
   studentId: string
   currentLevel: number | null | undefined
+  levels: LevelData[]
 }
 
-export function LevelSelector({ studentId, currentLevel }: Props) {
+export function LevelSelector({ studentId, currentLevel, levels }: Props) {
   const [level, setLevel] = useState<number | null>(currentLevel ?? null)
   const [loading, setLoading] = useState(false)
 
@@ -29,25 +30,26 @@ export function LevelSelector({ studentId, currentLevel }: Props) {
           onClick={() => handleChange(null)}
           disabled={loading}
           className={`px-2.5 py-1.5 text-xs font-medium transition-colors ${
-            level === null ? "bg-slate-700 text-white" : "bg-white text-slate-500 hover:bg-slate-50"
+            level === null ? "bg-slate-700 text-white" : "bg-white text-slate-400 hover:bg-slate-50"
           }`}
         >
           —
         </button>
-        {Object.entries(LEVELS).map(([num, cfg], i) => {
-          const n = Number(num)
-          const isActive = level === n
+        {levels.map((l, i) => {
+          const isActive = level === l.id
           return (
             <button
-              key={n}
-              onClick={() => handleChange(n)}
+              key={l.id}
+              onClick={() => handleChange(l.id)}
               disabled={loading}
-              className={`px-2.5 py-1.5 text-xs font-semibold border-l transition-colors ${
-                isActive ? cfg.badgeClass : "bg-white text-slate-500 hover:bg-slate-50"
-              }`}
-              title={cfg.label}
+              title={l.name}
+              className={`px-2.5 py-1.5 text-xs font-semibold border-l transition-all`}
+              style={isActive
+                ? { backgroundColor: l.color, color: textColor(l.color) }
+                : { backgroundColor: "white", color: "#64748b" }
+              }
             >
-              {n}
+              {l.id}
             </button>
           )
         })}

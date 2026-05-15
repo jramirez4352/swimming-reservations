@@ -31,6 +31,8 @@ export default async function ProfesorClassDetailPage({ params }: { params: Para
 
   if (!cls || cls.instructorUserId !== session.user.id) notFound()
 
+  const levels = await db.level.findMany({ orderBy: { order: "asc" } })
+
   const isPast = new Date(cls.datetime) < new Date()
   const attendedCount = cls.reservations.filter(r => r.attended).length
   const pct = cls.maxCapacity > 0 ? Math.round((cls.reservations.length / cls.maxCapacity) * 100) : 0
@@ -121,7 +123,7 @@ export default async function ProfesorClassDetailPage({ params }: { params: Para
                       {r.user.phone && <div>{r.user.phone}</div>}
                     </TableCell>
                     <TableCell>
-                      <LevelSelector studentId={r.user.id} currentLevel={r.user.level} />
+                      <LevelSelector studentId={r.user.id} currentLevel={r.user.level} levels={levels} />
                     </TableCell>
                     <TableCell>
                       {r.attended ? (

@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { ClassCard } from "@/components/ClassCard"
 import { LevelBadge } from "@/components/LevelBadge"
+import { LevelData } from "@/lib/levels"
 import Link from "next/link"
 
 const DAY_HEADERS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]
@@ -24,7 +25,7 @@ interface Props {
   reservations: { classId: string; id: string }[]
   waitlist: string[]
   userName?: string | null
-  studentLevel?: number | null
+  studentLevel?: LevelData | null
 }
 
 function getMonthOffset(year: number, month: number) {

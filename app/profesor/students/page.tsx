@@ -10,17 +10,19 @@ export default async function ProfesorStudentsPage() {
   const session = await auth()
   if (!session) return null
 
-  const myClasses = await db.class.findMany({
-    where: { instructorUserId: session.user.id },
-    include: {
-      reservations: {
-        where: { status: "ACTIVE" },
-        include: { user: { select: { id: true, name: true, email: true, phone: true, city: true, level: true } } },
+  const [levels, myClasses] = await Promise.all([
+    db.level.findMany({ orderBy: { order: "asc" } }),
+    db.class.findMany({
+      where: { instructorUserId: session.user.id },
+      include: {
+        reservations: {
+          where: { status: "ACTIVE" },
+          include: { user: { select: { id: true, name: true, email: true, phone: true, city: true, level: true } } },
+        },
       },
-    },
-  })
+    }),
+  ])
 
-  // Unique students across all classes, with the classes they're enrolled in
   const studentMap = new Map<string, {
     user: { id: string; name: string; email: string; phone: string | null; city: string | null; level: number | null }
     classes: string[]
@@ -52,28 +54,31 @@ export default async function ProfesorStudentsPage() {
         </div>
       ) : (
         <div className="rounded-md border bg-white overflow-hidden divide-y">
-          {students.map(({ user, classes }) => (
-            <div key={user.id} className="px-4 py-3 flex items-start justify-between gap-4">
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <p className="font-medium text-sm">{user.name}</p>
-                  <LevelBadge level={user.level} size="sm" />
+          {students.map(({ user, classes }) => {
+            const levelData = levels.find(l => l.id === user.level) ?? null
+            return (
+              <div key={user.id} className="px-4 py-3 flex items-start justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="font-medium text-sm">{user.name}</p>
+                    <LevelBadge level={levelData} size="sm" />
+                  </div>
+                  <p className="text-xs text-muted-foreground">{user.email}{user.phone ? ` · ${user.phone}` : ""}</p>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {classes.map(c => (
+                      <Badge key={c} variant="secondary" className="text-[10px]">{c}</Badge>
+                    ))}
+                  </div>
+                  <div className="mt-2">
+                    <LevelSelector studentId={user.id} currentLevel={user.level} levels={levels} />
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground">{user.email}{user.phone ? ` · ${user.phone}` : ""}</p>
-                <div className="flex flex-wrap gap-1 mt-1">
-                  {classes.map(c => (
-                    <Badge key={c} variant="secondary" className="text-[10px]">{c}</Badge>
-                  ))}
-                </div>
-                <div className="mt-2">
-                  <LevelSelector studentId={user.id} currentLevel={user.level} />
-                </div>
+                <Link href={`/profesor/messages/new?toUserId=${user.id}`}>
+                  <Button variant="outline" size="sm">✉️</Button>
+                </Link>
               </div>
-              <Link href={`/profesor/messages/new?toUserId=${user.id}`}>
-                <Button variant="outline" size="sm">✉️</Button>
-              </Link>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
     </div>

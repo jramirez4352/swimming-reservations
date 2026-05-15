@@ -78,6 +78,13 @@ model WaitlistEntry {
   @@unique([userId, classId])
 }
 
+model Level {
+  id    Int    @id @default(autoincrement())
+  name  String
+  color String
+  order Int    @default(0)
+}
+
 model Settings {
   id                String   @id @default("main")
   allowRegistration Boolean  @default(true)
