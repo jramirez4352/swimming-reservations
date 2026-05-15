@@ -128,6 +128,13 @@ export async function changeUserRole(userId: string, role: string) {
   return { success: true }
 }
 
+export async function toggleCanCreateClasses(userId: string, enabled: boolean) {
+  await requireAdmin()
+  await db.user.update({ where: { id: userId }, data: { canCreateClasses: enabled } })
+  revalidatePath(`/admin/students/${userId}`)
+  return { success: true }
+}
+
 export async function toggleRegistration(enabled: boolean) {
   await requireAdmin()
   await db.settings.upsert({

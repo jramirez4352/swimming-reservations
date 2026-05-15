@@ -18,6 +18,7 @@ model User {
   city              String?
   address           String?
   level             Int?
+  canCreateClasses  Boolean        @default(false)
   reservations      Reservation[]
   waitlistEntries   WaitlistEntry[]
   instructorClasses  Class[]             @relation("InstructorClasses")

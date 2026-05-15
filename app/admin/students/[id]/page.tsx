@@ -11,6 +11,7 @@ import { AdminEditUserForm } from "@/components/AdminEditUserForm"
 import { LevelBadge } from "@/components/LevelBadge"
 import { LevelSelector } from "@/components/LevelSelector"
 import { EvaluationDisplay } from "@/components/EvaluationDisplay"
+import { CanCreateClassesToggle } from "@/components/CanCreateClassesToggle"
 
 type Params = Promise<{ id: string }>
 type SearchParams = Promise<{ history?: string }>
@@ -101,6 +102,14 @@ export default async function StudentDetailPage({
           <RoleSelector userId={student.id} currentRole={student.role} />
         </div>
       </div>
+
+      {/* Profesor permissions */}
+      {student.role === "PROFESOR" && (
+        <div className="mb-6 p-4 rounded-lg border bg-white">
+          <h2 className="text-sm font-semibold mb-3 text-muted-foreground uppercase tracking-wide">Permisos del profesor</h2>
+          <CanCreateClassesToggle userId={student.id} initialValue={student.canCreateClasses} />
+        </div>
+      )}
 
       {/* Level (only for students) */}
       {student.role === "STUDENT" && (

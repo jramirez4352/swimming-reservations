@@ -12,7 +12,8 @@ export default async function ProfesorClassesPage() {
 
   const now = new Date()
 
-  const [upcoming, past] = await Promise.all([
+  const [user, upcoming, past] = await Promise.all([
+    db.user.findUnique({ where: { id: session.user.id }, select: { canCreateClasses: true, role: true } }),
     db.class.findMany({
       where: { instructorUserId: session.user.id, datetime: { gte: now } },
       include: { reservations: { where: { status: "ACTIVE" } } },
@@ -61,7 +62,14 @@ export default async function ProfesorClassesPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Mis Clases</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Mis Clases</h1>
+        {(user?.canCreateClasses || user?.role === "ADMIN") && (
+          <Link href="/profesor/classes/new">
+            <Button className="bg-emerald-600 hover:bg-emerald-700">+ Nueva clase</Button>
+          </Link>
+        )}
+      </div>
 
       {upcoming.length === 0 && past.length === 0 ? (
         <div className="rounded-xl border bg-white p-8 text-center text-muted-foreground">
