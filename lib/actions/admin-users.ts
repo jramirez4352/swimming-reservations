@@ -85,6 +85,41 @@ export async function adminSetPassword(
   return { success: true }
 }
 
+const UpdateUserSchema = z.object({
+  name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
+  email: z.string().email("Email inválido"),
+  phone: z.string().optional(),
+  city: z.string().optional(),
+  address: z.string().optional(),
+})
+
+export async function adminUpdateUser(
+  userId: string,
+  _prev: { error?: string; success?: boolean } | null,
+  formData: FormData
+) {
+  await requireAdmin()
+
+  const parsed = UpdateUserSchema.safeParse({
+    name: formData.get("name"),
+    email: formData.get("email"),
+    phone: formData.get("phone") || undefined,
+    city: formData.get("city") || undefined,
+    address: formData.get("address") || undefined,
+  })
+  if (!parsed.success) return { error: parsed.error.issues[0].message }
+
+  const emailTaken = await db.user.findFirst({
+    where: { email: parsed.data.email, NOT: { id: userId } },
+  })
+  if (emailTaken) return { error: "Ese email ya está en uso por otro usuario" }
+
+  await db.user.update({ where: { id: userId }, data: parsed.data })
+  revalidatePath(`/admin/students/${userId}`)
+  revalidatePath("/admin/students")
+  return { success: true }
+}
+
 export async function changeUserRole(userId: string, role: string) {
   await requireAdmin()
   await db.user.update({ where: { id: userId }, data: { role } })

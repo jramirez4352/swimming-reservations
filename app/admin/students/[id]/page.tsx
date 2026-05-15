@@ -7,6 +7,7 @@ import Link from "next/link"
 import { StudentActions } from "@/components/StudentActions"
 import { RoleSelector } from "@/components/RoleSelector"
 import { AdminSetPasswordForm } from "@/components/AdminSetPasswordForm"
+import { AdminEditUserForm } from "@/components/AdminEditUserForm"
 
 type Params = Promise<{ id: string }>
 type SearchParams = Promise<{ history?: string }>
@@ -87,6 +88,19 @@ export default async function StudentDetailPage({
           </div>
           <RoleSelector userId={student.id} currentRole={student.role} />
         </div>
+      </div>
+
+      {/* Edit user info */}
+      <div className="mb-6 p-4 rounded-lg border bg-white">
+        <h2 className="text-sm font-semibold mb-4 text-muted-foreground uppercase tracking-wide">Editar información</h2>
+        <AdminEditUserForm
+          userId={student.id}
+          currentName={student.name}
+          currentEmail={student.email}
+          currentPhone={student.phone}
+          currentCity={student.city}
+          currentAddress={student.address}
+        />
       </div>
 
       {/* Change password */}
