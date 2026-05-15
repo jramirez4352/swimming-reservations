@@ -38,6 +38,7 @@ export function DashboardCalendar({ classes, reservations, waitlist, userName }:
   const today = new Date()
   const [viewDate, setViewDate] = useState(new Date(today.getFullYear(), today.getMonth(), 1))
   const [selectedDay, setSelectedDay] = useState<number>(today.getDate())
+  const [showAll, setShowAll] = useState(false)
 
   const year = viewDate.getFullYear()
   const month = viewDate.getMonth()
@@ -75,6 +76,12 @@ export function DashboardCalendar({ classes, reservations, waitlist, userName }:
     .slice()
     .sort((a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime())
 
+  // All active reservations sorted by date (for showAll mode)
+  const allReservedClasses = reservations
+    .map(r => ({ reservationId: r.id, cls: classes.find(c => c.id === r.classId) }))
+    .filter((r): r is { reservationId: string; cls: ClassItem } => !!r.cls)
+    .sort((a, b) => new Date(a.cls.datetime).getTime() - new Date(b.cls.datetime).getTime())
+
   const monthLabel = new Intl.DateTimeFormat("es-MX", { month: "long", year: "numeric" }).format(viewDate)
   const selectedLabel = new Intl.DateTimeFormat("es-MX", {
     weekday: "long", day: "numeric", month: "long",
@@ -89,9 +96,20 @@ export function DashboardCalendar({ classes, reservations, waitlist, userName }:
         <h1 className="text-2xl font-bold">Inicio</h1>
         <p className="text-muted-foreground mt-1">
           Hola, <strong>{userName}</strong>.{" "}
-          {totalActive > 0
-            ? <>Tienes <strong>{totalActive}</strong> reserva{totalActive !== 1 ? "s" : ""} activa{totalActive !== 1 ? "s" : ""}.</>
-            : "No tienes reservas activas."}
+          {totalActive > 0 ? (
+            <>
+              Tienes{" "}
+              <button
+                onClick={() => setShowAll(true)}
+                className="text-blue-600 hover:underline font-semibold"
+              >
+                {totalActive} reserva{totalActive !== 1 ? "s" : ""} activa{totalActive !== 1 ? "s" : ""}
+              </button>
+              .
+            </>
+          ) : (
+            "No tienes reservas activas."
+          )}
         </p>
       </div>
 
@@ -136,7 +154,7 @@ export function DashboardCalendar({ classes, reservations, waitlist, userName }:
             return (
               <button
                 key={day}
-                onClick={() => setSelectedDay(day)}
+                onClick={() => { setSelectedDay(day); setShowAll(false) }}
                 disabled={!hasClasses}
                 className={`
                   relative flex flex-col items-center justify-center rounded-xl
@@ -188,35 +206,66 @@ export function DashboardCalendar({ classes, reservations, waitlist, userName }:
         </div>
       </div>
 
-      {/* Selected day detail */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-base font-semibold capitalize">{selectedLabel}</h2>
-          {selectedClasses.length > 0 && (
-            <span className="text-xs text-muted-foreground">{selectedClasses.length} clase{selectedClasses.length !== 1 ? "s" : ""}</span>
+      {/* Day detail / All reservations */}
+      {showAll ? (
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-base font-semibold">Mis reservas activas</h2>
+            <button
+              onClick={() => setShowAll(false)}
+              className="text-xs text-muted-foreground hover:text-slate-700 flex items-center gap-1"
+            >
+              ← Volver al calendario
+            </button>
+          </div>
+          {allReservedClasses.length === 0 ? (
+            <div className="rounded-xl border bg-white p-6 text-center">
+              <p className="text-muted-foreground text-sm">No tienes reservas activas.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {allReservedClasses.map(({ reservationId, cls }) => (
+                <ClassCard
+                  key={reservationId}
+                  cls={cls}
+                  reservationId={reservationId}
+                  onWaitlist={waitlistSet.has(cls.id)}
+                />
+              ))}
+            </div>
           )}
         </div>
-
-        {selectedClasses.length === 0 ? (
-          <div className="rounded-xl border bg-white p-6 text-center">
-            <p className="text-muted-foreground text-sm mb-2">No hay clases este día.</p>
-            <Link href="/classes" className="text-sm text-blue-600 hover:underline">
-              Ver todas las clases →
-            </Link>
+      ) : (
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-base font-semibold capitalize">{selectedLabel}</h2>
+            {selectedClasses.length > 0 && (
+              <span className="text-xs text-muted-foreground">
+                {selectedClasses.length} clase{selectedClasses.length !== 1 ? "s" : ""}
+              </span>
+            )}
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {selectedClasses.map(cls => (
-              <ClassCard
-                key={cls.id}
-                cls={cls}
-                reservationId={reservationMap.get(cls.id)}
-                onWaitlist={waitlistSet.has(cls.id)}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+          {selectedClasses.length === 0 ? (
+            <div className="rounded-xl border bg-white p-6 text-center">
+              <p className="text-muted-foreground text-sm mb-2">No hay clases este día.</p>
+              <Link href="/classes" className="text-sm text-blue-600 hover:underline">
+                Ver todas las clases →
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {selectedClasses.map(cls => (
+                <ClassCard
+                  key={cls.id}
+                  cls={cls}
+                  reservationId={reservationMap.get(cls.id)}
+                  onWaitlist={waitlistSet.has(cls.id)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }
