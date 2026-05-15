@@ -14,6 +14,10 @@ interface Lvl { id: number; name: string; color: string }
 export function NewClassForm({ professors, levels }: { professors: Prof[]; levels: Lvl[] }) {
   const [state, action, pending] = useActionState(createClass, null)
   const [isRecurring, setIsRecurring] = useState(false)
+  const [localDatetime, setLocalDatetime] = useState("")
+
+  // Convert browser local time to UTC ISO string so Vercel (UTC) stores it correctly
+  const utcDatetime = localDatetime ? new Date(localDatetime).toISOString() : ""
 
   return (
     <div className="max-w-lg">
@@ -82,7 +86,15 @@ export function NewClassForm({ professors, levels }: { professors: Prof[]; level
 
               <div className="space-y-1">
                 <Label htmlFor="datetime">Fecha y hora de la primera clase</Label>
-                <Input id="datetime" name="datetime" type="datetime-local" required />
+                {/* No name= en el input visible; el valor UTC va en el hidden */}
+                <Input
+                  id="datetime"
+                  type="datetime-local"
+                  required
+                  value={localDatetime}
+                  onChange={e => setLocalDatetime(e.target.value)}
+                />
+                <input type="hidden" name="datetime" value={utcDatetime} />
               </div>
 
               <div className="grid grid-cols-2 gap-4">

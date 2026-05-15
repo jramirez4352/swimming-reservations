@@ -1,6 +1,6 @@
 "use client"
 
-import { useActionState } from "react"
+import { useActionState, useState } from "react"
 import { updateClass } from "@/lib/actions/classes"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { use } from "react"
 
-// Pre-filled values come via URL search params (set by the Edit button)
 export default function EditClassPage({
   params,
   searchParams,
@@ -30,13 +29,18 @@ export default function EditClassPage({
   const boundAction = updateClass.bind(null, id)
   const [state, action, pending] = useActionState(boundAction, null)
 
-  // Format datetime for input[type=datetime-local] using LOCAL time (not UTC)
+  // Pre-fill with local time so the admin sees and edits the correct local time
   function toLocalInputValue(iso: string) {
     const d = new Date(iso)
     const pad = (n: number) => String(n).padStart(2, "0")
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
   }
-  const datetimeValue = sp.datetime ? toLocalInputValue(sp.datetime) : ""
+
+  const [localDatetime, setLocalDatetime] = useState(
+    sp.datetime ? toLocalInputValue(sp.datetime) : ""
+  )
+  // Convert browser local time → UTC ISO string before sending to server
+  const utcDatetime = localDatetime ? new Date(localDatetime).toISOString() : ""
 
   return (
     <div className="max-w-lg">
@@ -70,7 +74,14 @@ export default function EditClassPage({
             </div>
             <div className="space-y-1">
               <Label htmlFor="datetime">Fecha y hora</Label>
-              <Input id="datetime" name="datetime" type="datetime-local" defaultValue={datetimeValue} required />
+              <Input
+                id="datetime"
+                type="datetime-local"
+                value={localDatetime}
+                onChange={e => setLocalDatetime(e.target.value)}
+                required
+              />
+              <input type="hidden" name="datetime" value={utcDatetime} />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">

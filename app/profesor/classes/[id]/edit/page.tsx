@@ -1,6 +1,6 @@
 "use client"
 
-import { useActionState } from "react"
+import { useActionState, useState } from "react"
 import { updateProfesorClass } from "@/lib/actions/profesor-classes"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -21,13 +21,16 @@ export default function ProfesorEditClassPage({
   const boundAction = updateProfesorClass.bind(null, id)
   const [state, action, pending] = useActionState(boundAction, null)
 
-  // Use local time methods so the admin sees the correct local time, not UTC
   function toLocalInputValue(iso: string) {
     const d = new Date(iso)
     const pad = (n: number) => String(n).padStart(2, "0")
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
   }
-  const datetimeValue = sp.datetime ? toLocalInputValue(sp.datetime) : ""
+
+  const [localDatetime, setLocalDatetime] = useState(
+    sp.datetime ? toLocalInputValue(sp.datetime) : ""
+  )
+  const utcDatetime = localDatetime ? new Date(localDatetime).toISOString() : ""
 
   return (
     <div className="max-w-lg">
@@ -55,7 +58,14 @@ export default function ProfesorEditClassPage({
             </div>
             <div className="space-y-1">
               <Label htmlFor="datetime">Fecha y hora</Label>
-              <Input id="datetime" name="datetime" type="datetime-local" defaultValue={datetimeValue} required />
+              <Input
+                id="datetime"
+                type="datetime-local"
+                value={localDatetime}
+                onChange={e => setLocalDatetime(e.target.value)}
+                required
+              />
+              <input type="hidden" name="datetime" value={utcDatetime} />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
