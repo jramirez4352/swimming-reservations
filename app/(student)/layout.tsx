@@ -21,6 +21,9 @@ export default async function StudentLayout({ children }: { children: React.Reac
             <Link href="/history" className="text-sm font-medium hover:text-blue-600 transition-colors">
               Historial
             </Link>
+            <Link href="/profile" className="text-sm font-medium hover:text-blue-600 transition-colors">
+              Mi Perfil
+            </Link>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-sm text-muted-foreground">{session?.user?.name}</span>

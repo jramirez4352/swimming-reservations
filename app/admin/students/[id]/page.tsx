@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import Link from "next/link"
 import { StudentActions } from "@/components/StudentActions"
+import { RoleSelector } from "@/components/RoleSelector"
 
 type Params = Promise<{ id: string }>
 type SearchParams = Promise<{ history?: string }>
@@ -68,13 +69,16 @@ export default async function StudentDetailPage({
             Registrado el {new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", year: "numeric" }).format(new Date(student.createdAt))}
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          {student.suspended ? (
-            <Badge variant="destructive">Suspendido</Badge>
-          ) : (
-            <Badge className="bg-green-600">Activo</Badge>
-          )}
-          <StudentActions userId={student.id} suspended={student.suspended} />
+        <div className="flex flex-col items-end gap-2">
+          <div className="flex items-center gap-3">
+            {student.suspended ? (
+              <Badge variant="destructive">Suspendido</Badge>
+            ) : (
+              <Badge className="bg-green-600">Activo</Badge>
+            )}
+            <StudentActions userId={student.id} suspended={student.suspended} />
+          </div>
+          <RoleSelector userId={student.id} currentRole={student.role} />
         </div>
       </div>
 

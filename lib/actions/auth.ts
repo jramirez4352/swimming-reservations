@@ -17,6 +17,11 @@ export async function register(
   _prev: { error?: string } | null,
   formData: FormData
 ) {
+  const settings = await db.settings.findUnique({ where: { id: "main" } })
+  if (settings && !settings.allowRegistration) {
+    return { error: "El registro público está deshabilitado. Contacta al administrador." }
+  }
+
   const parsed = RegisterSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),

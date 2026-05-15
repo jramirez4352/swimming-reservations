@@ -55,3 +55,9 @@ model WaitlistEntry {
 
   @@unique([userId, classId])
 }
+
+model Settings {
+  id                String   @id @default("main")
+  allowRegistration Boolean  @default(true)
+  updatedAt         DateTime @updatedAt
+}

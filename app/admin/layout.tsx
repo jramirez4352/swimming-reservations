@@ -26,6 +26,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <Link href="/admin/students" className="text-sm hover:text-cyan-300 transition-colors">
               Alumnos
             </Link>
+            <Link href="/admin/reports" className="text-sm hover:text-cyan-300 transition-colors">
+              Reportes
+            </Link>
+            <Link href="/admin/settings" className="text-sm hover:text-cyan-300 transition-colors">
+              Configuración
+            </Link>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-sm text-slate-300">{session?.user?.name}</span>
