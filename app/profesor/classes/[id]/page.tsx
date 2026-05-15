@@ -12,7 +12,7 @@ import Link from "next/link"
 
 type Params = Promise<{ id: string }>
 
-const fmt = new Intl.DateTimeFormat("es-MX", { weekday: "long", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })
+const fmt = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", weekday: "long", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })
 
 export default async function ProfesorClassDetailPage({ params }: { params: Params }) {
   const { id } = await params

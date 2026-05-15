@@ -1,4 +1,4 @@
-import { db } from "@/lib/db"
+﻿import { db } from "@/lib/db"
 import { auth } from "@/lib/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -41,7 +41,7 @@ export default async function HistoryPage() {
       ) : (
         <div className="space-y-3">
           {reservations.map((r) => {
-            const dateStr = new Intl.DateTimeFormat("es-MX", {
+            const dateStr = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota",
               weekday: "long", day: "numeric", month: "long",
               year: "numeric", hour: "2-digit", minute: "2-digit",
             }).format(new Date(r.class.datetime))

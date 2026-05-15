@@ -7,7 +7,7 @@ import Link from "next/link"
 
 type Params = Promise<{ id: string }>
 
-const fmt = new Intl.DateTimeFormat("es-MX", {
+const fmt = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota",
   weekday: "long", day: "numeric", month: "long", year: "numeric",
   hour: "2-digit", minute: "2-digit",
 })

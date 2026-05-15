@@ -1,8 +1,8 @@
-import { db } from "@/lib/db"
+﻿import { db } from "@/lib/db"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
-const fmt = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "short", year: "numeric" })
+const fmt = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", day: "numeric", month: "short", year: "numeric" })
 
 export default async function AdminReportsPage() {
   const now = new Date()

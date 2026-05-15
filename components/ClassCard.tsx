@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
@@ -49,11 +49,11 @@ export function ClassCard({ cls, reservationId, onWaitlist = false, studentLevel
   const barColor = occupancyPct >= 100 ? "bg-red-500" : occupancyPct >= 75 ? "bg-amber-500" : "bg-blue-500"
   const pctColor = occupancyPct >= 100 ? "text-red-600" : occupancyPct >= 75 ? "text-amber-600" : "text-blue-600"
 
-  const dateShort = new Intl.DateTimeFormat("es-MX", {
+  const dateShort = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota",
     weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
   }).format(new Date(cls.datetime))
 
-  const dateFull = new Intl.DateTimeFormat("es-MX", {
+  const dateFull = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota",
     weekday: "long", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit",
   }).format(new Date(cls.datetime))
 

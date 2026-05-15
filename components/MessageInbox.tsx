@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
@@ -13,7 +13,7 @@ type Message = {
   from: { name: string; role: string }
 }
 
-const fmt = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })
+const fmt = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })
 
 export function MessageInbox({ messages }: { messages: Message[] }) {
   const [openId, setOpenId] = useState<string | null>(null)

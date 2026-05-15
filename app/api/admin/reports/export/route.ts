@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server"
+﻿import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 
@@ -29,7 +29,7 @@ export async function GET() {
     }),
   ])
 
-  const fmt = new Intl.DateTimeFormat("es-MX", {
+  const fmt = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota",
     day: "2-digit",
     month: "2-digit",
     year: "numeric",

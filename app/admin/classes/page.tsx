@@ -1,4 +1,4 @@
-import { db } from "@/lib/db"
+﻿import { db } from "@/lib/db"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -57,7 +57,7 @@ export default async function AdminClassesPage() {
               {classes.map((cls) => {
                 const occupied = cls.reservations.length
                 const isFull = occupied >= cls.maxCapacity
-                const dateStr = new Intl.DateTimeFormat("es-MX", {
+                const dateStr = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota",
                   day: "numeric",
                   month: "short",
                   year: "numeric",

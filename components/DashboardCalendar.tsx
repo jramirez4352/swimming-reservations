@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { ClassCard } from "@/components/ClassCard"
@@ -86,8 +86,8 @@ export function DashboardCalendar({ classes, reservations, waitlist, userName, s
     .filter((r): r is { reservationId: string; cls: ClassItem } => !!r.cls)
     .sort((a, b) => new Date(a.cls.datetime).getTime() - new Date(b.cls.datetime).getTime())
 
-  const monthLabel = new Intl.DateTimeFormat("es-MX", { month: "long", year: "numeric" }).format(viewDate)
-  const selectedLabel = new Intl.DateTimeFormat("es-MX", {
+  const monthLabel = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", month: "long", year: "numeric" }).format(viewDate)
+  const selectedLabel = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota",
     weekday: "long", day: "numeric", month: "long",
   }).format(new Date(year, month, selectedDay))
 

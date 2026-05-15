@@ -7,8 +7,11 @@ export default async function DashboardPage() {
   if (!session) return null
 
   const now = new Date()
-  const startOfToday = new Date(now)
-  startOfToday.setHours(0, 0, 0, 0)
+  // Midnight in Bogotá (COT = UTC-5, fixed, no DST)
+  const COT_MS = 5 * 60 * 60 * 1000
+  const cotNow = new Date(now.getTime() - COT_MS)
+  cotNow.setUTCHours(0, 0, 0, 0)
+  const startOfToday = new Date(cotNow.getTime() + COT_MS)
   const threeMonthsLater = new Date(now.getFullYear(), now.getMonth() + 3, 1)
 
   const student = await db.user.findUnique({ where: { id: session.user.id }, select: { level: true } })

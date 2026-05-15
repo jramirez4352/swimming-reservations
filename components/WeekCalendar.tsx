@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -63,7 +63,7 @@ function ClassSlot({
   const isFull = available <= 0
   const isReserved = !!reservationId
 
-  const timeStr = new Intl.DateTimeFormat("es-MX", {
+  const timeStr = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota",
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(cls.datetime))
@@ -150,8 +150,8 @@ export function WeekCalendar({ classes, reservations, waitlist }: Props) {
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
   const isCurrentWeek = isSameDay(getMondayOf(today), weekStart)
 
-  const startFmt = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "short" }).format(weekStart)
-  const endFmt = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "short" }).format(addDays(weekStart, 6))
+  const startFmt = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", day: "numeric", month: "short" }).format(weekStart)
+  const endFmt = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", day: "numeric", month: "short" }).format(addDays(weekStart, 6))
   const weekLabel = `${startFmt} – ${endFmt}`
 
   const byDay = days.map((day) => ({
@@ -190,8 +190,8 @@ export function WeekCalendar({ classes, reservations, waitlist }: Props) {
         <div className="grid grid-cols-7 gap-1.5 min-w-[700px]">
           {byDay.map(({ day, items }, i) => {
             const isToday = isSameDay(day, today)
-            const dayNum = new Intl.DateTimeFormat("es-MX", { day: "numeric" }).format(day)
-            const monthShort = new Intl.DateTimeFormat("es-MX", { month: "short" }).format(day)
+            const dayNum = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", day: "numeric" }).format(day)
+            const monthShort = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", month: "short" }).format(day)
 
             return (
               <div key={i} className="flex flex-col gap-1">

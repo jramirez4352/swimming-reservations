@@ -1,4 +1,4 @@
-import { db } from "@/lib/db"
+﻿import { db } from "@/lib/db"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { StudentActions } from "@/components/StudentActions"
@@ -22,7 +22,7 @@ const ROLE_BADGE: Record<string, { label: string; className: string }> = {
   ADMIN:    { label: "Admin",     className: "bg-slate-700" },
 }
 
-const fmt = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "short", year: "numeric" })
+const fmt = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", day: "numeric", month: "short", year: "numeric" })
 
 export default async function AdminUsersPage({ searchParams }: { searchParams: SearchParams }) {
   const { q, role } = await searchParams

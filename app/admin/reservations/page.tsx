@@ -1,4 +1,4 @@
-import { db } from "@/lib/db"
+﻿import { db } from "@/lib/db"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ReservationActions } from "@/components/ReservationActions"
@@ -7,10 +7,10 @@ import Link from "next/link"
 type SearchParams = Promise<{ status?: string }>
 
 const fmt = (d: Date) =>
-  new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(d)
+  new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(d)
 
 const fmtDate = (d: Date) =>
-  new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "short", year: "numeric" }).format(d)
+  new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", day: "numeric", month: "short", year: "numeric" }).format(d)
 
 export default async function AdminReservationsPage({ searchParams }: { searchParams: SearchParams }) {
   const { status } = await searchParams

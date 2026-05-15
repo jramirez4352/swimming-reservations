@@ -86,7 +86,7 @@ export default async function StudentDetailPage({
             </p>
           )}
           <p className="text-sm text-muted-foreground mt-1">
-            Registrado el {new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", year: "numeric" }).format(new Date(student.createdAt))}
+            Registrado el {new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", day: "numeric", month: "long", year: "numeric" }).format(new Date(student.createdAt))}
           </p>
         </div>
         <div className="flex flex-col items-end gap-2">
@@ -173,7 +173,7 @@ export default async function StudentDetailPage({
                     <TableCell className="font-medium">{r.class.title}</TableCell>
                     <TableCell>{r.class.instructor}</TableCell>
                     <TableCell className="text-sm">
-                      {new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(r.class.datetime))}
+                      {new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(r.class.datetime))}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -200,7 +200,7 @@ export default async function StudentDetailPage({
                   <TableRow key={w.id}>
                     <TableCell className="font-medium">{w.class.title}</TableCell>
                     <TableCell className="text-sm">
-                      {new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(w.class.datetime))}
+                      {new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(w.class.datetime))}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -261,7 +261,7 @@ export default async function StudentDetailPage({
                       <TableCell className="font-medium">{r.class.title}</TableCell>
                       <TableCell>{r.class.instructor}</TableCell>
                       <TableCell className="text-sm">
-                        {new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(r.class.datetime))}
+                        {new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(r.class.datetime))}
                         {!isPast && <span className="ml-1.5 text-[10px] text-amber-600 font-medium">futura</span>}
                       </TableCell>
                       <TableCell>
