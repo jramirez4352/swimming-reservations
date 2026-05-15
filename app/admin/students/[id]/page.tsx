@@ -22,7 +22,7 @@ export default async function StudentDetailPage({
   const { history: historyFilter } = await searchParams
 
   const student = await db.user.findFirst({
-    where: { id, role: "STUDENT" },
+    where: { id },
     include: {
       reservations: {
         include: { class: true },

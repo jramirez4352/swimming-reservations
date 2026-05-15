@@ -10,7 +10,7 @@ const links = [
   { href: "/admin/dashboard", label: "Dashboard" },
   { href: "/admin/classes", label: "Clases" },
   { href: "/admin/reservations", label: "Reservas" },
-  { href: "/admin/students", label: "Alumnos" },
+  { href: "/admin/students", label: "Usuarios" },
   { href: "/admin/reports", label: "Reportes" },
   { href: "/admin/settings", label: "Configuración" },
 ]

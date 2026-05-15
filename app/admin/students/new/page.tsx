@@ -65,6 +65,7 @@ export default function NewUserPage() {
                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <option value="STUDENT">Alumno</option>
+                <option value="PROFESOR">Profesor</option>
                 <option value="ADMIN">Administrador</option>
               </select>
             </div>
