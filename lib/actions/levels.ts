@@ -3,6 +3,7 @@
 import { db } from "@/lib/db"
 import { auth } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
+import { sendLevelUpEmail } from "@/lib/email"
 
 async function requireProfesorOrAdmin() {
   const session = await auth()
@@ -15,10 +16,23 @@ async function requireProfesorOrAdmin() {
 export async function assignLevel(studentId: string, level: number | null) {
   await requireProfesorOrAdmin()
 
-  await db.user.update({
-    where: { id: studentId },
-    data: { level },
-  })
+  const [prevStudent] = await Promise.all([
+    db.user.findUnique({ where: { id: studentId }, select: { level: true, name: true, email: true } }),
+  ])
+
+  await db.user.update({ where: { id: studentId }, data: { level } })
+
+  // Enviar email solo cuando se asigna o sube de nivel (no al quitar)
+  if (level !== null && level !== prevStudent?.level) {
+    const levelData = await db.level.findUnique({ where: { id: level } })
+    if (levelData && prevStudent?.email) {
+      await sendLevelUpEmail(
+        { name: prevStudent.name, email: prevStudent.email },
+        levelData.name,
+        levelData.color
+      ).catch(() => {/* no bloquea si el email falla */})
+    }
+  }
 
   revalidatePath(`/admin/students/${studentId}`)
   revalidatePath("/admin/students")

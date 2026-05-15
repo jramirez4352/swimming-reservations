@@ -34,6 +34,35 @@ function fmtDate(d: Date) {
   }).format(d)
 }
 
+export async function sendLevelUpEmail(user: User, levelName: string, color: string) {
+  await send(
+    user.email,
+    `🎉 ¡Subiste al ${levelName}! — AquaReservas`,
+    `
+    <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:24px">
+      <h2 style="color:#2563eb;margin-bottom:4px">🏊 AquaReservas</h2>
+      <div style="text-align:center;margin:24px 0">
+        <div style="display:inline-block;background:${color};color:white;font-size:18px;font-weight:700;padding:12px 32px;border-radius:999px">
+          ${levelName}
+        </div>
+      </div>
+      <h3 style="text-align:center;margin-top:0">¡Felicitaciones, ${user.name}!</h3>
+      <p style="text-align:center;color:#374151">
+        Tu esfuerzo y dedicación han dado frutos. Tu profesor te ha asignado el <strong>${levelName}</strong> en AquaReservas. 🏆
+      </p>
+      <div style="background:#f0fdf4;border-left:4px solid #22c55e;padding:16px;border-radius:6px;margin:20px 0">
+        <p style="margin:0;color:#166534;font-size:15px">
+          Sigue así — cada clase que tomas te acerca más a tu mejor versión. ¡No te detengas! 💪
+        </p>
+      </div>
+      <p style="color:#6b7280;font-size:14px;text-align:center">
+        Ingresa a la app para ver tus clases disponibles para este nivel.
+      </p>
+    </div>
+    `
+  )
+}
+
 export async function sendPasswordResetEmail(user: User, resetUrl: string) {
   await send(
     user.email,
