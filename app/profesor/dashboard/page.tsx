@@ -40,15 +40,17 @@ export default async function ProfesorDashboardPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
-          { label: "Clases hoy",      value: todayClasses.length,    icon: "📅" },
-          { label: "Esta semana",     value: upcomingClasses.length,  icon: "📋" },
-          { label: "Total alumnos",   value: totalStudents,           icon: "👥" },
-          { label: "Mensajes nuevos", value: unreadMessages,          icon: "✉️" },
+          { label: "Clases hoy",      value: todayClasses.length,    icon: "📅", href: "/profesor/classes" },
+          { label: "Esta semana",     value: upcomingClasses.length,  icon: "📋", href: "/profesor/classes" },
+          { label: "Total alumnos",   value: totalStudents,           icon: "👥", href: "/profesor/students" },
+          { label: "Mensajes nuevos", value: unreadMessages,          icon: "✉️", href: "/profesor/messages" },
         ].map(s => (
-          <Card key={s.label}>
-            <CardHeader className="pb-1"><CardTitle className="text-xs text-muted-foreground">{s.label}</CardTitle></CardHeader>
-            <CardContent><p className="text-2xl font-bold">{s.icon} {s.value}</p></CardContent>
-          </Card>
+          <Link key={s.label} href={s.href} className="group block">
+            <Card className="transition-all group-hover:shadow-md group-hover:border-emerald-300 cursor-pointer">
+              <CardHeader className="pb-1"><CardTitle className="text-xs text-muted-foreground">{s.label}</CardTitle></CardHeader>
+              <CardContent><p className="text-2xl font-bold">{s.icon} {s.value}</p></CardContent>
+            </Card>
+          </Link>
         ))}
       </div>
 
@@ -60,16 +62,19 @@ export default async function ProfesorDashboardPage() {
             {todayClasses.map(cls => {
               const pct = Math.round((cls.reservations.length / cls.maxCapacity) * 100)
               return (
-                <Link key={cls.id} href={`/profesor/classes/${cls.id}`} className="block">
-                  <div className="bg-white rounded-xl border p-4 hover:shadow-md transition-shadow">
+                <Link key={cls.id} href={`/profesor/classes/${cls.id}`} className="group block">
+                  <div className="bg-white rounded-xl border p-4 transition-all group-hover:shadow-md group-hover:border-emerald-300 group-hover:-translate-y-0.5 cursor-pointer">
                     <div className="flex items-start justify-between">
                       <div>
-                        <p className="font-semibold">{cls.title}</p>
+                        <p className="font-semibold group-hover:text-emerald-700 transition-colors">{cls.title}</p>
                         <p className="text-sm text-muted-foreground capitalize">{fmtFull.format(new Date(cls.datetime))} · {cls.durationMins} min</p>
                       </div>
-                      <Badge variant={cls.reservations.length >= cls.maxCapacity ? "destructive" : "secondary"}>
-                        {cls.reservations.length}/{cls.maxCapacity}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={cls.reservations.length >= cls.maxCapacity ? "destructive" : "secondary"}>
+                          {cls.reservations.length}/{cls.maxCapacity}
+                        </Badge>
+                        <span className="text-muted-foreground text-sm opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                      </div>
                     </div>
                     <div className="mt-3 w-full bg-slate-100 rounded-full h-1.5">
                       <div className={`h-1.5 rounded-full ${pct >= 100 ? "bg-red-500" : pct >= 75 ? "bg-amber-500" : "bg-emerald-500"}`} style={{ width: `${Math.min(pct, 100)}%` }} />
