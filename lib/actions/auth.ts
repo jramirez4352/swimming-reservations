@@ -70,7 +70,7 @@ export async function login(
     throw err
   }
 
-  redirect(user.role === "ADMIN" ? "/admin/dashboard" : "/dashboard")
+  redirect(user.role === "ADMIN" ? "/admin/dashboard" : user.role === "PROFESOR" ? "/profesor/dashboard" : "/dashboard")
 }
 
 export async function logout() {

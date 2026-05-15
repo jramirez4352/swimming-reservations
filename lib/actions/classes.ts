@@ -35,6 +35,8 @@ export async function createClass(
 
   const { title, description, instructor, datetime, durationMins, maxCapacity } = parsed.data
 
+  const instructorUserId = (formData.get("instructorUserId") as string) || null
+
   const isRecurring = formData.get("isRecurring") === "on"
   const frequency = formData.get("frequency") as "daily" | "weekly"
   const occurrences = Math.min(20, Math.max(2, parseInt(formData.get("occurrences") as string) || 1))
@@ -48,12 +50,12 @@ export async function createClass(
       const d = new Date(baseDate)
       d.setDate(d.getDate() + i * stepDays)
       await db.class.create({
-        data: { title, description, instructor, datetime: d, durationMins, maxCapacity, recurringGroupId: groupId },
+        data: { title, description, instructor, instructorUserId, datetime: d, durationMins, maxCapacity, recurringGroupId: groupId },
       })
     }
   } else {
     await db.class.create({
-      data: { title, description, instructor, datetime: new Date(datetime), durationMins, maxCapacity },
+      data: { title, description, instructor, instructorUserId, datetime: new Date(datetime), durationMins, maxCapacity },
     })
   }
 

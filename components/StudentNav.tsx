@@ -7,13 +7,14 @@ import { Button } from "@/components/ui/button"
 import { logout } from "@/lib/actions/auth"
 
 const links = [
-  { href: "/classes", label: "Clases" },
-  { href: "/dashboard", label: "Mis Reservas" },
-  { href: "/history", label: "Historial" },
-  { href: "/profile", label: "Mi Perfil" },
+  { href: "/classes",   label: "Clases" },
+  { href: "/dashboard", label: "Inicio" },
+  { href: "/history",   label: "Historial" },
+  { href: "/messages",  label: "Mensajes", badge: true },
+  { href: "/profile",   label: "Mi Perfil" },
 ]
 
-export function StudentNav({ name }: { name?: string | null }) {
+export function StudentNav({ name, unreadMessages = 0 }: { name?: string | null; unreadMessages?: number }) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
 
@@ -32,11 +33,16 @@ export function StudentNav({ name }: { name?: string | null }) {
               <Link
                 key={l.href}
                 href={l.href}
-                className={`text-sm font-medium transition-colors ${
+                className={`relative text-sm font-medium transition-colors ${
                   pathname === l.href ? "text-blue-600" : "text-slate-600 hover:text-blue-600"
                 }`}
               >
                 {l.label}
+                {l.badge && unreadMessages > 0 && (
+                  <span className="absolute -top-1.5 -right-3 bg-blue-600 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                    {unreadMessages > 9 ? "9+" : unreadMessages}
+                  </span>
+                )}
               </Link>
             ))}
           </div>
@@ -75,13 +81,18 @@ export function StudentNav({ name }: { name?: string | null }) {
                 key={l.href}
                 href={l.href}
                 onClick={() => setOpen(false)}
-                className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                   pathname === l.href
                     ? "bg-blue-50 text-blue-600"
                     : "text-slate-700 hover:bg-slate-50"
                 }`}
               >
                 {l.label}
+                {l.badge && unreadMessages > 0 && (
+                  <span className="bg-blue-600 text-white text-[10px] font-bold rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
+                    {unreadMessages > 9 ? "9+" : unreadMessages}
+                  </span>
+                )}
               </Link>
             ))}
             <div className="flex items-center justify-between pt-3 mt-2 border-t px-1">

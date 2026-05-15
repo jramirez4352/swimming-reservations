@@ -8,18 +8,21 @@ datasource db {
 }
 
 model User {
-  id              String         @id @default(cuid())
-  name            String
-  email           String         @unique
-  password        String
-  role            String         @default("STUDENT")
-  suspended       Boolean        @default(false)
-  phone           String?
-  city            String?
-  address         String?
-  reservations    Reservation[]
-  waitlistEntries WaitlistEntry[]
-  createdAt       DateTime       @default(now())
+  id                String         @id @default(cuid())
+  name              String
+  email             String         @unique
+  password          String
+  role              String         @default("STUDENT")
+  suspended         Boolean        @default(false)
+  phone             String?
+  city              String?
+  address           String?
+  reservations      Reservation[]
+  waitlistEntries   WaitlistEntry[]
+  instructorClasses Class[]        @relation("InstructorClasses")
+  sentMessages      Message[]      @relation("SentMessages")
+  receivedMessages  Message[]      @relation("ReceivedMessages")
+  createdAt         DateTime       @default(now())
 }
 
 model Class {
@@ -27,6 +30,8 @@ model Class {
   title            String
   description      String?
   instructor       String
+  instructorUserId String?
+  instructorUser   User?          @relation("InstructorClasses", fields: [instructorUserId], references: [id])
   datetime         DateTime
   durationMins     Int
   maxCapacity      Int
@@ -34,6 +39,18 @@ model Class {
   reservations     Reservation[]
   waitlistEntries  WaitlistEntry[]
   createdAt        DateTime       @default(now())
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  from       User     @relation("SentMessages", fields: [fromUserId], references: [id])
+  fromUserId String
+  to         User     @relation("ReceivedMessages", fields: [toUserId], references: [id])
+  toUserId   String
+  subject    String
+  content    String
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
 }
 
 model Reservation {
