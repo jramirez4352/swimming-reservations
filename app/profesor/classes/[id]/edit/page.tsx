@@ -21,7 +21,13 @@ export default function ProfesorEditClassPage({
   const boundAction = updateProfesorClass.bind(null, id)
   const [state, action, pending] = useActionState(boundAction, null)
 
-  const datetimeValue = sp.datetime ? new Date(sp.datetime).toISOString().slice(0, 16) : ""
+  // Use local time methods so the admin sees the correct local time, not UTC
+  function toLocalInputValue(iso: string) {
+    const d = new Date(iso)
+    const pad = (n: number) => String(n).padStart(2, "0")
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+  }
+  const datetimeValue = sp.datetime ? toLocalInputValue(sp.datetime) : ""
 
   return (
     <div className="max-w-lg">
