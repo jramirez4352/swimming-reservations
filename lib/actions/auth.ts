@@ -15,6 +15,10 @@ const RegisterSchema = z.object({
   city: z.string().min(2, "Ingresa tu ciudad"),
   address: z.string().optional(),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+  confirmPassword: z.string(),
+}).refine(d => d.password === d.confirmPassword, {
+  message: "Las contraseñas no coinciden",
+  path: ["confirmPassword"],
 })
 
 export async function register(
@@ -33,6 +37,7 @@ export async function register(
     city: formData.get("city"),
     address: formData.get("address") || undefined,
     password: formData.get("password"),
+    confirmPassword: formData.get("confirmPassword"),
   })
 
   if (!parsed.success) {

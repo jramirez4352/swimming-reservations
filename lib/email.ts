@@ -34,6 +34,33 @@ function fmtDate(d: Date) {
   }).format(d)
 }
 
+export async function sendPasswordResetEmail(user: User, resetUrl: string) {
+  await send(
+    user.email,
+    `🔐 Restablecer contraseña — AquaReservas`,
+    `
+    <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:24px">
+      <h2 style="color:#2563eb;margin-bottom:4px">🏊 AquaReservas</h2>
+      <h3 style="margin-top:0">Restablecer contraseña</h3>
+      <p>Hola <strong>${user.name}</strong>,</p>
+      <p>Recibimos una solicitud para restablecer la contraseña de tu cuenta.</p>
+      <div style="text-align:center;margin:24px 0">
+        <a href="${resetUrl}"
+           style="background:#2563eb;color:white;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block">
+          Restablecer contraseña →
+        </a>
+      </div>
+      <p style="color:#6b7280;font-size:13px">
+        Este enlace expira en <strong>1 hora</strong>. Si no solicitaste el cambio, ignora este correo — tu contraseña no será modificada.
+      </p>
+      <p style="color:#9ca3af;font-size:12px;word-break:break-all">
+        Si el botón no funciona, copia este enlace en tu navegador:<br>${resetUrl}
+      </p>
+    </div>
+    `
+  )
+}
+
 export async function sendWelcomeEmail(user: User) {
   await send(
     user.email,

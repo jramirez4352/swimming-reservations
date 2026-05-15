@@ -24,7 +24,8 @@ model User {
   instructorClasses  Class[]             @relation("InstructorClasses")
   sentMessages       Message[]           @relation("SentMessages")
   receivedMessages   Message[]           @relation("ReceivedMessages")
-  givenEvaluations   ClassEvaluation[]   @relation("ProfesorEvaluations")
+  givenEvaluations    ClassEvaluation[]    @relation("ProfesorEvaluations")
+  passwordResetTokens PasswordResetToken[]
   createdAt         DateTime       @default(now())
 }
 
@@ -102,6 +103,16 @@ model Level {
   color   String
   order   Int     @default(0)
   classes Class[]
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
 
 model Settings {

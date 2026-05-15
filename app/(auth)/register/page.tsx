@@ -58,6 +58,11 @@ export default function RegisterPage() {
             <Input id="password" name="password" type="password" placeholder="Mínimo 6 caracteres" required />
           </div>
 
+          <div className="space-y-1">
+            <Label htmlFor="confirmPassword">Confirmar contraseña</Label>
+            <Input id="confirmPassword" name="confirmPassword" type="password" placeholder="Repite tu contraseña" required />
+          </div>
+
           <Button type="submit" className="w-full" disabled={pending}>
             {pending ? "Creando cuenta..." : "Crear cuenta"}
           </Button>
