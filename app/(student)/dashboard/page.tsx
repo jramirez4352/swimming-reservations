@@ -1,8 +1,7 @@
 import { db } from "@/lib/db"
 import { auth } from "@/lib/auth"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { CancelButton } from "@/components/CancelButton"
+import { Card, CardContent } from "@/components/ui/card"
+import { ClassCard } from "@/components/ClassCard"
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -10,7 +9,14 @@ export default async function DashboardPage() {
 
   const reservations = await db.reservation.findMany({
     where: { userId: session.user.id, status: "ACTIVE" },
-    include: { class: true },
+    include: {
+      class: {
+        include: {
+          reservations: { where: { status: "ACTIVE" }, select: { id: true } },
+          _count: { select: { waitlistEntries: true } },
+        },
+      },
+    },
     orderBy: { class: { datetime: "asc" } },
   })
 
@@ -29,35 +35,18 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-3">
-          {reservations.map((r) => {
-            const dateStr = new Intl.DateTimeFormat("es-MX", {
-              weekday: "long",
-              day: "numeric",
-              month: "long",
-              hour: "2-digit",
-              minute: "2-digit",
-            }).format(new Date(r.class.datetime))
-
-            return (
-              <Card key={r.id}>
-                <CardHeader className="py-3 pb-0">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-base">{r.class.title}</CardTitle>
-                    <Badge variant="default" className="bg-green-600">Activa</Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="py-3 flex items-end justify-between gap-4">
-                  <div className="text-sm text-muted-foreground space-y-0.5">
-                    <p>👤 {r.class.instructor}</p>
-                    <p>📅 {dateStr}</p>
-                    <p>⏱ {r.class.durationMins} min</p>
-                  </div>
-                  <CancelButton reservationId={r.id} />
-                </CardContent>
-              </Card>
-            )
-          })}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {reservations.map((r) => (
+            <ClassCard
+              key={r.id}
+              cls={{
+                ...r.class,
+                activeReservations: r.class.reservations.length,
+                waitlistCount: r.class._count.waitlistEntries,
+              }}
+              reservationId={r.id}
+            />
+          ))}
         </div>
       )}
     </div>
